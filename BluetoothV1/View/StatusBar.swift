@@ -4,7 +4,7 @@
 //
 //  Created by Yi Tong on 8/1/19.
 //  Copyright © 2019 Yi Tong. All rights reserved.
-//
+//https://xd.adobe.com/view/c99c2128-c82e-4146-59a0-39fe48345dc8-bfad/?fullscreen
 
 import UIKit
 
@@ -13,7 +13,11 @@ class StatusBar: UIView {
     private weak var spinView: SpinView!
     private weak var textLabel: UILabel!
     
-    
+    var status: Status  = .hidden {
+        didSet {
+            statusChanged(from: oldValue, to: status)
+        }
+    }
     
     var title: String? {
         get {
@@ -90,6 +94,10 @@ class StatusBar: UIView {
         contentStackView.snp.makeConstraints { (make) in
             make.center.height.equalToSuperview()
         }
+    }
+    
+    private func statusChanged(from oldStatus: Status, to newStatus: Status) {
+        
     }
     
     enum Status {

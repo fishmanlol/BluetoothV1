@@ -25,9 +25,10 @@ extension DiscoverViewModel {
     public func configure(_ cell: DeviceCell, with device: Device) {
         cell.deviceIconImageView.image = device.image
         cell.deviceNameLabel.text = device.name
+        cell.deviceNameLabel.font = UIFont.avenirNext(bold: .regular, size: UIFont.middleFontSize)
     }
     
     public func getDevice(at indexPath: IndexPath) -> Device {
-        return devices[indexPath.row]
+        return devices[indexPath.section]
     }
 }

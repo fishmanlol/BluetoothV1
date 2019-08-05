@@ -37,13 +37,12 @@ extension DiscoverViewController {
         navigationController?.navigationBar.setBackgroundImage(UIImage.from(.white), for: .default)
         navigationController?.navigationBar.titleTextAttributes = [
                                                                     NSAttributedString.Key.foregroundColor: UIColor.darkBlue,
-                                                                    NSAttributedString.Key.font: UIFont.avenirNext(bold: .medium, size: UIFont.middleFontSize)]
+                                                                    NSAttributedString.Key.font: UIFont.avenirNext(bold: .medium, size: 20)]
     }
     
     private func configureViews() {
         let statusBar = StatusBar()
         statusBar.backgroundColor = UIColor.darkBlue
-        statusBar.title = "Searching..."
         statusBar.titleColor = UIColor.white
         statusBar.spinColor = UIColor.white
         statusBar.startAnimating()
@@ -51,8 +50,10 @@ extension DiscoverViewController {
         view.addSubview(statusBar)
         
         let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.tableFooterView = UIView()
-        tableView.register(DeviceCell.self, forCellReuseIdentifier: "DEVICECELL")
+        tableView.separatorStyle = .none
+        tableView.register(UINib(nibName: "DeviceCell", bundle: nil), forCellReuseIdentifier: "DEVICECELL")
         tableView.delegate = self
         tableView.dataSource = self
         self.tableView = tableView
@@ -60,20 +61,49 @@ extension DiscoverViewController {
         
         statusBar.snp.makeConstraints { (make) in
             make.left.right.top.equalToSuperview()
-            make.height.equalTo(44)
+            make.height.equalTo(0)
+        }
+        
+        tableView.snp.makeConstraints { (make) in
+            make.top.equalTo(statusBar.snp.bottom)
+            make.bottom.left.centerX.equalToSuperview()
         }
     }
 }
 
 // MARK: - Table view delegate
 extension DiscoverViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
     
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        present(WaitingViewController(), animated: true, completion: nil)
+        if case .hidden = statusBar.status {
+            statusBar.status = .working("Searching...")
+        } else {
+            statusBar.status = .hidden
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.contentView.layer.masksToBounds = true
+    }
 }
 
 // MARK: - Table view datasource
 extension DiscoverViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return vm.getDeviceCount()
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -81,5 +111,11 @@ extension DiscoverViewController: UITableViewDataSource {
         let device = vm.getDevice(at: indexPath)
         vm.configure(cell, with: device)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
     }
 }

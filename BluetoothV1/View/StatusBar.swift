@@ -4,7 +4,7 @@
 //
 //  Created by Yi Tong on 8/1/19.
 //  Copyright © 2019 Yi Tong. All rights reserved.
-//https://xd.adobe.com/view/c99c2128-c82e-4146-59a0-39fe48345dc8-bfad/?fullscreen
+//  https://xd.adobe.com/view/c99c2128-c82e-4146-59a0-39fe48345dc8-bfad/?fullscreen
 
 import UIKit
 
@@ -12,6 +12,10 @@ class StatusBar: UIView {
     private weak var contentStackView: UIStackView!
     private weak var spinView: SpinView!
     private weak var textLabel: UILabel!
+    
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: super.intrinsicContentSize.width, height: max(super.intrinsicContentSize.height, 36))
+    }
     
     var status: Status  = .hidden {
         didSet {
@@ -73,6 +77,8 @@ class StatusBar: UIView {
     }
     
     private func setup() {
+        isHidden = true
+        
         let contentStackView = UIStackView()
         contentStackView.axis = .horizontal
         contentStackView.alignment = .center
@@ -97,7 +103,70 @@ class StatusBar: UIView {
     }
     
     private func statusChanged(from oldStatus: Status, to newStatus: Status) {
+        if case .hidden = status {
+            fold()
+            return
+        }
         
+        unfold()
+        
+        switch status {
+        case .succeed(let str):
+            spinView.stopAnimating()
+            title = str
+        case .failed(let str):
+            spinView.stopAnimating()
+            title = str
+        case .working(let str):
+            spinView.startAnimating()
+            title = str
+        default:
+            break
+        }
+        
+    }
+    
+    private func fold(animate: Bool = true) {
+        if isHidden || superview == nil { return }
+        
+        if animate {
+            snp.updateConstraints { (make) in
+                make.height.equalTo(0)
+            }
+            
+            UIView.animate(withDuration: 0.35, animations: {
+                self.superview?.layoutIfNeeded()
+            }) { (_) in
+                self.isHidden = true
+            }
+        }
+    }
+    
+    private func unfold(animate: Bool = true) {
+        if !isHidden || superview == nil { return }
+        isHidden = false
+        
+        if animate {
+            snp.updateConstraints { (make) in
+                make.height.equalTo(intrinsicContentSize.height)
+            }
+            
+            UIView.animate(withDuration: 0.35, animations: {
+                self.superview?.layoutIfNeeded()
+            })
+        }
+    }
+    
+    private func updateHeight(to height: CGFloat, animate: Bool) {
+        snp.updateConstraints { (make) in
+            make.height.equalTo(height)
+        }
+        
+        if animate {
+            UIView.animate(withDuration: 0.35) {
+                self.superview?.layoutIfNeeded()
+            }
+        }
     }
     
     enum Status {

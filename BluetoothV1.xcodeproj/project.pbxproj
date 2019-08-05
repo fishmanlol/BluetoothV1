@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		102DE2DB22F7C656002B1897 /* WaitingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102DE2DA22F7C656002B1897 /* WaitingViewController.swift */; };
+		102DE2DD22F87B0E002B1897 /* progress_bar.json in Resources */ = {isa = PBXBuildFile; fileRef = 102DE2DC22F87B0E002B1897 /* progress_bar.json */; };
+		102DE2DF22F8825F002B1897 /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102DE2DE22F8825F002B1897 /* UIButton.swift */; };
+		8D94DF8DA0DF1A7FD79412C4 /* Pods_BluetoothV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0362CEF82C84DE0A7F29CEC /* Pods_BluetoothV1.framework */; };
 		8E27659822F49DBD00E2C70F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E27659722F49DBD00E2C70F /* AppDelegate.swift */; };
 		8E27659C22F49DBD00E2C70F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E27659B22F49DBD00E2C70F /* ViewController.swift */; };
-		8E27659F22F49DBD00E2C70F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E27659D22F49DBD00E2C70F /* Main.storyboard */; };
 		8E2765A122F49DBF00E2C70F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E2765A022F49DBF00E2C70F /* Assets.xcassets */; };
 		8E2765A422F49DBF00E2C70F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E2765A222F49DBF00E2C70F /* LaunchScreen.storyboard */; };
 		8E2765AC22F49DE900E2C70F /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2765AB22F49DE900E2C70F /* Record.swift */; };
@@ -22,13 +25,12 @@
 		8EF1C1ED22F4F843009A8CB4 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF1C1EC22F4F843009A8CB4 /* DiscoverViewModel.swift */; };
 		8EF1C1F022F4FECB009A8CB4 /* SpinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */; };
 		8EF1C1F122F4FECB009A8CB4 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */; };
-		9D65186EC7DEF5DA5C264551 /* Pods_BluetoothV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018E20EBA73D5C79ABC37EBC /* Pods_BluetoothV1.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		018E20EBA73D5C79ABC37EBC /* Pods_BluetoothV1.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluetoothV1.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1A1ADD299A4FED1BCF567156 /* Pods-BluetoothV1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluetoothV1.release.xcconfig"; path = "Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1.release.xcconfig"; sourceTree = "<group>"; };
-		4F3D0910563E2599FAADD61E /* Pods-BluetoothV1.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluetoothV1.debug.xcconfig"; path = "Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1.debug.xcconfig"; sourceTree = "<group>"; };
+		102DE2DA22F7C656002B1897 /* WaitingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewController.swift; sourceTree = "<group>"; };
+		102DE2DC22F87B0E002B1897 /* progress_bar.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = progress_bar.json; sourceTree = "<group>"; };
+		102DE2DE22F8825F002B1897 /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		8E27659422F49DBD00E2C70F /* BluetoothV1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluetoothV1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E27659722F49DBD00E2C70F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8E27659B22F49DBD00E2C70F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -46,6 +48,9 @@
 		8EF1C1EC22F4F843009A8CB4 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpinView.swift; sourceTree = "<group>"; };
 		8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
+		E0DB98F98727075917CD0A91 /* Pods-BluetoothV1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluetoothV1.release.xcconfig"; path = "Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1.release.xcconfig"; sourceTree = "<group>"; };
+		F0362CEF82C84DE0A7F29CEC /* Pods_BluetoothV1.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluetoothV1.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F384271F5AC77F48DCA69DE5 /* Pods-BluetoothV1.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluetoothV1.debug.xcconfig"; path = "Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,20 +58,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9D65186EC7DEF5DA5C264551 /* Pods_BluetoothV1.framework in Frameworks */,
+				8D94DF8DA0DF1A7FD79412C4 /* Pods_BluetoothV1.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		55F6E56F99F42571C39041BA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F0362CEF82C84DE0A7F29CEC /* Pods_BluetoothV1.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		8E27658B22F49DBD00E2C70F = {
 			isa = PBXGroup;
 			children = (
 				8E27659622F49DBD00E2C70F /* BluetoothV1 */,
 				8E27659522F49DBD00E2C70F /* Products */,
 				D06EB257B0BBF77A0CE20CE0 /* Pods */,
-				E4D25CDF445BAA152B8207E5 /* Frameworks */,
+				55F6E56F99F42571C39041BA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -101,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				8E2765B322F4EBDB00E2C70F /* UIFont.swift */,
+				102DE2DE22F8825F002B1897 /* UIButton.swift */,
 				8E2765B122F4EBD600E2C70F /* UIColor.swift */,
 				8E2765AF22F4EA1F00E2C70F /* UIImage.swift */,
 			);
@@ -118,6 +132,8 @@
 			isa = PBXGroup;
 			children = (
 				8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */,
+				102DE2DC22F87B0E002B1897 /* progress_bar.json */,
+				102DE2DA22F7C656002B1897 /* WaitingViewController.swift */,
 				8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */,
 				8E5288B022F4EEF600AFB2A4 /* DeviceCell.swift */,
 				8E5288B122F4EEF600AFB2A4 /* DeviceCell.xib */,
@@ -128,18 +144,10 @@
 		D06EB257B0BBF77A0CE20CE0 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				4F3D0910563E2599FAADD61E /* Pods-BluetoothV1.debug.xcconfig */,
-				1A1ADD299A4FED1BCF567156 /* Pods-BluetoothV1.release.xcconfig */,
+				F384271F5AC77F48DCA69DE5 /* Pods-BluetoothV1.debug.xcconfig */,
+				E0DB98F98727075917CD0A91 /* Pods-BluetoothV1.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		E4D25CDF445BAA152B8207E5 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				018E20EBA73D5C79ABC37EBC /* Pods_BluetoothV1.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,11 +157,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8E2765A822F49DBF00E2C70F /* Build configuration list for PBXNativeTarget "BluetoothV1" */;
 			buildPhases = (
-				5291FED8FE29276F1F4D4E74 /* [CP] Check Pods Manifest.lock */,
+				8B6C4A85F1C9DD5CA0FB8D9D /* [CP] Check Pods Manifest.lock */,
 				8E27659022F49DBD00E2C70F /* Sources */,
 				8E27659122F49DBD00E2C70F /* Frameworks */,
 				8E27659222F49DBD00E2C70F /* Resources */,
-				C8557A5DA05ABC3966D939E0 /* [CP] Embed Pods Frameworks */,
+				43722F51C24D1C98E9648161 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -204,7 +212,7 @@
 			files = (
 				8E2765A422F49DBF00E2C70F /* LaunchScreen.storyboard in Resources */,
 				8E2765A122F49DBF00E2C70F /* Assets.xcassets in Resources */,
-				8E27659F22F49DBD00E2C70F /* Main.storyboard in Resources */,
+				102DE2DD22F87B0E002B1897 /* progress_bar.json in Resources */,
 				8E5288B322F4EEF600AFB2A4 /* DeviceCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -212,7 +220,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5291FED8FE29276F1F4D4E74 /* [CP] Check Pods Manifest.lock */ = {
+		43722F51C24D1C98E9648161 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8B6C4A85F1C9DD5CA0FB8D9D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -234,23 +259,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C8557A5DA05ABC3966D939E0 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -259,6 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8EF1C1F022F4FECB009A8CB4 /* SpinView.swift in Sources */,
+				102DE2DF22F8825F002B1897 /* UIButton.swift in Sources */,
 				8E27659C22F49DBD00E2C70F /* ViewController.swift in Sources */,
 				8E2765B222F4EBD600E2C70F /* UIColor.swift in Sources */,
 				8E2765B022F4EA1F00E2C70F /* UIImage.swift in Sources */,
@@ -266,6 +275,7 @@
 				8E5288B222F4EEF600AFB2A4 /* DeviceCell.swift in Sources */,
 				8E2765B422F4EBDB00E2C70F /* UIFont.swift in Sources */,
 				8E2765AE22F4A35300E2C70F /* DiscoverViewController.swift in Sources */,
+				102DE2DB22F7C656002B1897 /* WaitingViewController.swift in Sources */,
 				8E27659822F49DBD00E2C70F /* AppDelegate.swift in Sources */,
 				8E2765AC22F49DE900E2C70F /* Record.swift in Sources */,
 				8EF1C1F122F4FECB009A8CB4 /* StatusBar.swift in Sources */,
@@ -344,7 +354,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -398,7 +408,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -410,7 +420,7 @@
 		};
 		8E2765A922F49DBF00E2C70F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4F3D0910563E2599FAADD61E /* Pods-BluetoothV1.debug.xcconfig */;
+			baseConfigurationReference = F384271F5AC77F48DCA69DE5 /* Pods-BluetoothV1.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -430,7 +440,7 @@
 		};
 		8E2765AA22F49DBF00E2C70F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1A1ADD299A4FED1BCF567156 /* Pods-BluetoothV1.release.xcconfig */;
+			baseConfigurationReference = E0DB98F98727075917CD0A91 /* Pods-BluetoothV1.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

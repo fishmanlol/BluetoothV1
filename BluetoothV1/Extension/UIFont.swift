@@ -20,16 +20,18 @@ extension UIFont {
             return UIFont(name: "AvenirNext-Medium", size: size) ?? UIFont.systemFont(ofSize: size)
         case .regular:
             return UIFont(name: "AvenirNext-Regular", size: size) ?? UIFont.systemFont(ofSize: size)
+        case .bold:
+            return UIFont(name: "AvenirNext-Bold", size: size) ?? UIFont.systemFont(ofSize: size)
         }
     }
     
     enum Bold {
-        case regular, medium
+        case regular, medium, bold
     }
 
     static func menlo(bold: Bold, size: CGFloat) -> UIFont {
         switch bold {
-        case .medium:
+        case .medium, .bold:
             return UIFont(name: "Menlo-Medium", size: size) ?? UIFont.systemFont(ofSize: size)
         case .regular:
             return UIFont(name: "Menlo-Regular", size: size) ?? UIFont.systemFont(ofSize: size)
@@ -41,7 +43,7 @@ extension UIFont {
         let name: String
         
         switch bold {
-        case .regular:
+        case .regular, .bold:
             name = "PingFangSC-Regular"
         case .medium:
             name = "PingFangSC-Medium"

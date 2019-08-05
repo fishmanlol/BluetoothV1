@@ -12,27 +12,43 @@ class DeviceCell: UITableViewCell {
     @IBOutlet weak var deviceNameLabel: UILabel!
     @IBOutlet weak var deviceIconImageView: UIImageView!
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override var frame: CGRect {
+        get {
+            return super.frame
+        }
+        
+        set {
+            var f = newValue
+            f.origin.x += 20
+            f.size.width -= 2 * 20
+            super.frame = f
+        }
     }
     
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
+    override func awakeFromNib() {
+        setup()
     }
 }
 
 // MARK: - private functions
 extension DeviceCell {
+    
     private func setup() {
-        deviceNameLabel.font = UIFont.avenirNext(bold: .regular, size: UIFont.largeFontSize)
+        deviceNameLabel.font = UIFont.avenirNext(bold: .bold, size: 27)
         deviceIconImageView.contentMode = .scaleAspectFit
         
         addShadow()
     }
     
     private func addShadow() {
+        backgroundColor = .clear
+        layer.masksToBounds = false
+        layer.shadowOpacity = 0.23
         layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOffset = CGSize(width: 5, height: 5 )
+        layer.shadowOffset = CGSize.zero
         layer.shadowRadius = 4
+        
+        contentView.backgroundColor = .white
+        contentView.layer.cornerRadius = 12
     }
 }

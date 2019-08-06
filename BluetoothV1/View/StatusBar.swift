@@ -55,16 +55,18 @@ class StatusBar: UIView {
         }
     }
     
-    private(set) var isAnimating: Bool = false
+    var isAnimating: Bool {
+        get {
+            return spinView.isAnimating
+        }
+    }
     
     func startAnimating () {
         spinView.startAnimating()
-        isAnimating = true
     }
     
     func stopAnimating() {
         spinView.stopAnimating()
-        isAnimating = false
     }
     
     override init(frame: CGRect) {
@@ -103,25 +105,27 @@ class StatusBar: UIView {
     }
     
     private func statusChanged(from oldStatus: Status, to newStatus: Status) {
-        if case .hidden = status {
-            fold()
-            return
-        }
-        
-        unfold()
-        
-        switch status {
-        case .succeed(let str):
-            spinView.stopAnimating()
-            title = str
-        case .failed(let str):
-            spinView.stopAnimating()
-            title = str
-        case .working(let str):
-            spinView.startAnimating()
-            title = str
-        default:
-            break
+        DispatchQueue.main.async {
+            if case .hidden = self.status {
+                self.fold()
+                return
+            }
+            
+            self.unfold()
+            
+            switch self.status {
+            case .succeed(let str):
+                self.spinView.stopAnimating()
+                self.title = str
+            case .failed(let str):
+                self.spinView.stopAnimating()
+                self.title = str
+            case .working(let str):
+                self.spinView.startAnimating()
+                self.title = str
+            default:
+                break
+            }
         }
         
     }

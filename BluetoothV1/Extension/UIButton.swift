@@ -9,7 +9,7 @@
 import UIKit
 
 extension UIButton {
-    func roundedCorner() {
+    override func roundedCorner() {
         layer.cornerRadius = 10
         layer.masksToBounds = true
     }

@@ -10,6 +10,7 @@ import UIKit
 
 class DeviceCell: UITableViewCell {
     @IBOutlet weak var deviceNameLabel: UILabel!
+    @IBOutlet weak var deviceNumberLabel: UILabel!
     @IBOutlet weak var deviceIconImageView: UIImageView!
     
     override var frame: CGRect {
@@ -34,8 +35,11 @@ class DeviceCell: UITableViewCell {
 extension DeviceCell {
     
     private func setup() {
-        deviceNameLabel.font = UIFont.avenirNext(bold: .bold, size: 27)
+        deviceNameLabel.font = UIFont.avenirNext(bold: .medium, size: UIFont.middleFontSize)
+        deviceNumberLabel.font = UIFont.avenirNext(bold: .regular, size: 15)
+        deviceNumberLabel.textColor = .gray
         deviceIconImageView.contentMode = .scaleAspectFit
+        selectionStyle = .none
         
         addShadow()
     }

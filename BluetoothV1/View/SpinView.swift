@@ -40,6 +40,7 @@ class SpinView: UIView {
         group.repeatCount = Float.infinity
         group.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
         group.animations = [startAnimation, endAnimation]
+        group.isRemovedOnCompletion = false
         return group
     }()
     

@@ -15,10 +15,30 @@ class WaitingViewController: UIViewController {
     weak var animationView: AnimationView!
     weak var cancelButton: UIButton!
     
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        modalTransitionStyle = .crossDissolve
+        modalPresentationStyle = .fullScreen
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        animationView.play()
+    }
+    
+    @objc func cancelButtonTapped(sender: UIButton) {
+        dismiss(animated: true, completion: nil)
     }
 }
 
@@ -37,11 +57,11 @@ extension WaitingViewController {
         
         let animationView = AnimationView(name: "progress_bar")
         animationView.loopMode = .loop
-        animationView.play()
         self.animationView = animationView
         view.addSubview(animationView)
         
         let cancelButton = UIButton(type: .system)
+        cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
         cancelButton.roundedCorner()
         cancelButton.backgroundColor = UIColor.lightBlue
         cancelButton.tintColor = .white

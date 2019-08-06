@@ -21,6 +21,40 @@ class DiscoverViewController: UIViewController {
         
         setup()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        vm.startDiscover()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        vm.stopDiscover()
+    }
+    
+    @objc func bluetoothStatusChanged(notification: Notification) {
+        switch notification.name {
+        case Notification.bluetoothOtherError:
+            statusBar.status = .failed("please make sure your bluetooth turned on")
+            displayAlert(title: "Bluetooth unavailable", msg: "Please make sure your bluetooth turned on", hasCancel: false, action: {})
+        case Notification.bluetoothUnauthorized:
+            statusBar.status = .failed("Bluetooth unauthorized")
+            displayAlert(title: "Bluetooth unavailable", msg: "Please check your bluetooth setting", hasCancel: false, action: {})
+        case Notification.bluetoothPoweredOff:
+            statusBar.status = .failed("Please turn on the bluetooth")
+            displayAlert(title: "Bluetooth unavailable", msg: "Please make sure your bluetooth turned on", hasCancel: false, action: {})
+        case Notification.bluetoothPoweredOn:
+            statusBar.status = .working("Searching...")
+        default:
+            break
+        }
+    }
+    
+    @objc func didDiscoverPeripheral(notification: Notification) {
+        
+    }
 }
 
 // MARK: - Private functions
@@ -29,6 +63,12 @@ extension DiscoverViewController {
         view.backgroundColor = .white
         configureNavigationBar()
         configureViews()
+        
+        Notification.addObserver(self, selector: #selector(bluetoothStatusChanged), name: Notification.bluetoothUnauthorized, object: vm)
+        Notification.addObserver(self, selector: #selector(bluetoothStatusChanged), name: Notification.bluetoothPoweredOff, object: vm)
+        Notification.addObserver(self, selector: #selector(bluetoothStatusChanged), name: Notification.bluetoothPoweredOn, object: vm)
+        Notification.addObserver(self, selector: #selector(bluetoothStatusChanged), name: Notification.bluetoothOtherError, object: vm)
+        Notification.addObserver(self, selector: #selector(didDiscoverPeripheral), name: Notification.didDiscoverPeripheral, object: vm)
     }
     
     private func configureNavigationBar() {
@@ -45,7 +85,6 @@ extension DiscoverViewController {
         statusBar.backgroundColor = UIColor.darkBlue
         statusBar.titleColor = UIColor.white
         statusBar.spinColor = UIColor.white
-        statusBar.startAnimating()
         self.statusBar = statusBar
         view.addSubview(statusBar)
         
@@ -82,13 +121,16 @@ extension DiscoverViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        present(WaitingViewController(), animated: true, completion: nil)
-        if case .hidden = statusBar.status {
-            statusBar.status = .working("Searching...")
-        } else {
-            statusBar.status = .hidden
+        tableView.deselectRow(at: indexPath, animated: false)
+        
+        guard vm.isBluetoothAvailable() else {
+            self.displayAlert(title: "Bluetooth unavailable", msg: "Please make sure your bluetooth turned on", hasCancel: false, action: {})
+            return
         }
+        
+//        let waitingViewController = WaitingViewController()
+        let waitingViewController = NewDeviceViewController()
+        present(waitingViewController, animated: true, completion: nil)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

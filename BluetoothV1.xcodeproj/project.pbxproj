@@ -11,7 +11,10 @@
 		102DE2DD22F87B0E002B1897 /* progress_bar.json in Resources */ = {isa = PBXBuildFile; fileRef = 102DE2DC22F87B0E002B1897 /* progress_bar.json */; };
 		102DE2DF22F8825F002B1897 /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102DE2DE22F8825F002B1897 /* UIButton.swift */; };
 		8D94DF8DA0DF1A7FD79412C4 /* Pods_BluetoothV1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0362CEF82C84DE0A7F29CEC /* Pods_BluetoothV1.framework */; };
-		8E1FC1B122F89E1F00A8C9FF /* libDeviceCommand.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E1FC1AF22F89E1F00A8C9FF /* libDeviceCommand.a */; };
+		8E01BD3C22FA02610064219D /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E01BD3B22FA02610064219D /* BluetoothManager.swift */; };
+		8E01BD4122FA33A90064219D /* TemperatureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E01BD3F22FA33A90064219D /* TemperatureCell.swift */; };
+		8E01BD4222FA33A90064219D /* TemperatureCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E01BD4022FA33A90064219D /* TemperatureCell.xib */; };
+		8E01BD4422FA54820064219D /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E01BD4322FA54820064219D /* Date.swift */; };
 		8E1FC1B722F89F0200A8C9FF /* libc++.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E1FC1B322F89F0200A8C9FF /* libc++.1.tbd */; };
 		8E1FC1B822F89F0200A8C9FF /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E1FC1B422F89F0200A8C9FF /* libc.tbd */; };
 		8E1FC1B922F89F0200A8C9FF /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E1FC1B522F89F0200A8C9FF /* libc++.tbd */; };
@@ -42,6 +45,10 @@
 		102DE2DA22F7C656002B1897 /* WaitingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewController.swift; sourceTree = "<group>"; };
 		102DE2DC22F87B0E002B1897 /* progress_bar.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = progress_bar.json; sourceTree = "<group>"; };
 		102DE2DE22F8825F002B1897 /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
+		8E01BD3B22FA02610064219D /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
+		8E01BD3F22FA33A90064219D /* TemperatureCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureCell.swift; sourceTree = "<group>"; };
+		8E01BD4022FA33A90064219D /* TemperatureCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TemperatureCell.xib; sourceTree = "<group>"; };
+		8E01BD4322FA54820064219D /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		8E1FC1AF22F89E1F00A8C9FF /* libDeviceCommand.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libDeviceCommand.a; sourceTree = "<group>"; };
 		8E1FC1B022F89E1F00A8C9FF /* DeviceCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceCommand.h; sourceTree = "<group>"; };
 		8E1FC1B222F89E5700A8C9FF /* AiTmed-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AiTmed-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -87,7 +94,6 @@
 				8E1FC1B922F89F0200A8C9FF /* libc++.tbd in Frameworks */,
 				8E1FC1BA22F89F0200A8C9FF /* libc++abi.tbd in Frameworks */,
 				8D94DF8DA0DF1A7FD79412C4 /* Pods_BluetoothV1.framework in Frameworks */,
-				8E1FC1B122F89E1F00A8C9FF /* libDeviceCommand.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,6 +192,7 @@
 			isa = PBXGroup;
 			children = (
 				8E1FC1BD22F8C5FA00A8C9FF /* UIViewController.swift */,
+				8E01BD4322FA54820064219D /* Date.swift */,
 				8E1FC1BB22F8AD3E00A8C9FF /* Notification.swift */,
 				8E2765B322F4EBDB00E2C70F /* UIFont.swift */,
 				102DE2DE22F8825F002B1897 /* UIButton.swift */,
@@ -200,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				8E2765AB22F49DE900E2C70F /* Record.swift */,
+				8E01BD3B22FA02610064219D /* BluetoothManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -209,6 +217,8 @@
 			children = (
 				8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */,
 				8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */,
+				8E01BD3F22FA33A90064219D /* TemperatureCell.swift */,
+				8E01BD4022FA33A90064219D /* TemperatureCell.xib */,
 				8E5288B022F4EEF600AFB2A4 /* DeviceCell.swift */,
 				8E5288B122F4EEF600AFB2A4 /* DeviceCell.xib */,
 			);
@@ -284,6 +294,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E01BD4222FA33A90064219D /* TemperatureCell.xib in Resources */,
 				8E2765A422F49DBF00E2C70F /* LaunchScreen.storyboard in Resources */,
 				8E2765A122F49DBF00E2C70F /* Assets.xcassets in Resources */,
 				8E1FC1C822F8F9AE00A8C9FF /* NewDeviceViewController.xib in Resources */,
@@ -343,9 +354,11 @@
 			files = (
 				8E1FC1BE22F8C5FA00A8C9FF /* UIViewController.swift in Sources */,
 				8EF1C1F022F4FECB009A8CB4 /* SpinView.swift in Sources */,
+				8E01BD3C22FA02610064219D /* BluetoothManager.swift in Sources */,
 				8E1FC1C022F8E5B000A8C9FF /* DeviceViewController.swift in Sources */,
 				102DE2DF22F8825F002B1897 /* UIButton.swift in Sources */,
 				8E2765B222F4EBD600E2C70F /* UIColor.swift in Sources */,
+				8E01BD4122FA33A90064219D /* TemperatureCell.swift in Sources */,
 				8E2765B022F4EA1F00E2C70F /* UIImage.swift in Sources */,
 				8EF1C1ED22F4F843009A8CB4 /* DiscoverViewModel.swift in Sources */,
 				8E5288B222F4EEF600AFB2A4 /* DeviceCell.swift in Sources */,
@@ -355,6 +368,7 @@
 				8E2765AE22F4A35300E2C70F /* DiscoverViewController.swift in Sources */,
 				102DE2DB22F7C656002B1897 /* WaitingViewController.swift in Sources */,
 				8E1FC1C222F8E5EA00A8C9FF /* DeviceViewModel.swift in Sources */,
+				8E01BD4422FA54820064219D /* Date.swift in Sources */,
 				8E27659822F49DBD00E2C70F /* AppDelegate.swift in Sources */,
 				8E2765AC22F49DE900E2C70F /* Record.swift in Sources */,
 				8E1FC1CA22F906DD00A8C9FF /* UIView.swift in Sources */,

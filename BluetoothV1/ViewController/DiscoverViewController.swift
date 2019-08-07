@@ -14,46 +14,13 @@ class DiscoverViewController: UIViewController {
     weak var continueButton: UIButton!
     weak var statusBar: StatusBar!
     
-    let vm = DiscoverViewModel()
+    private var devices: [Device] = [Device(model: .TEMP03, name: "TEMP030011", batches: [], peripheral: nil)]
+    var discoveredPeripherals: Set<CBPeripheral> = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        vm.startDiscover()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        vm.stopDiscover()
-    }
-    
-    @objc func bluetoothStatusChanged(notification: Notification) {
-        switch notification.name {
-        case Notification.bluetoothOtherError:
-            statusBar.status = .failed("please make sure your bluetooth turned on")
-            displayAlert(title: "Bluetooth unavailable", msg: "Please make sure your bluetooth turned on", hasCancel: false, action: {})
-        case Notification.bluetoothUnauthorized:
-            statusBar.status = .failed("Bluetooth unauthorized")
-            displayAlert(title: "Bluetooth unavailable", msg: "Please check your bluetooth setting", hasCancel: false, action: {})
-        case Notification.bluetoothPoweredOff:
-            statusBar.status = .failed("Please turn on the bluetooth")
-            displayAlert(title: "Bluetooth unavailable", msg: "Please make sure your bluetooth turned on", hasCancel: false, action: {})
-        case Notification.bluetoothPoweredOn:
-            statusBar.status = .working("Searching...")
-        default:
-            break
-        }
-    }
-    
-    @objc func didDiscoverPeripheral(notification: Notification) {
-        
     }
 }
 
@@ -61,14 +28,9 @@ class DiscoverViewController: UIViewController {
 extension DiscoverViewController {
     private func setup() {
         view.backgroundColor = .white
+        BluetoothManager.shared.addDelegate(self)
         configureNavigationBar()
         configureViews()
-        
-        Notification.addObserver(self, selector: #selector(bluetoothStatusChanged), name: Notification.bluetoothUnauthorized, object: vm)
-        Notification.addObserver(self, selector: #selector(bluetoothStatusChanged), name: Notification.bluetoothPoweredOff, object: vm)
-        Notification.addObserver(self, selector: #selector(bluetoothStatusChanged), name: Notification.bluetoothPoweredOn, object: vm)
-        Notification.addObserver(self, selector: #selector(bluetoothStatusChanged), name: Notification.bluetoothOtherError, object: vm)
-        Notification.addObserver(self, selector: #selector(didDiscoverPeripheral), name: Notification.didDiscoverPeripheral, object: vm)
     }
     
     private func configureNavigationBar() {
@@ -108,6 +70,20 @@ extension DiscoverViewController {
             make.bottom.left.centerX.equalToSuperview()
         }
     }
+    
+    private func configure(_ cell: DeviceCell, with device: Device) {
+        cell.deviceIconImageView.image = device.image
+        cell.deviceNameLabel.text = device.displayName
+        cell.deviceNumberLabel.text = device.number
+    }
+    
+    private func getDeviceCount() -> Int {
+        return devices.count
+    }
+    
+    private func getDevice(at indexPath: IndexPath) -> Device {
+        return devices[indexPath.section]
+    }
 }
 
 // MARK: - Table view delegate
@@ -123,14 +99,9 @@ extension DiscoverViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         
-        guard vm.isBluetoothAvailable() else {
-            self.displayAlert(title: "Bluetooth unavailable", msg: "Please make sure your bluetooth turned on", hasCancel: false, action: {})
-            return
-        }
-        
-//        let waitingViewController = WaitingViewController()
-        let waitingViewController = NewDeviceViewController()
-        present(waitingViewController, animated: true, completion: nil)
+        let device = getDevice(at: indexPath)
+        let deviceViewController = DeviceViewController(device: device)
+        navigationController?.pushViewController(deviceViewController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -141,7 +112,7 @@ extension DiscoverViewController: UITableViewDelegate {
 // MARK: - Table view datasource
 extension DiscoverViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return vm.getDeviceCount()
+        return getDeviceCount()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -150,8 +121,8 @@ extension DiscoverViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DEVICECELL", for: indexPath) as! DeviceCell
-        let device = vm.getDevice(at: indexPath)
-        vm.configure(cell, with: device)
+        let device = getDevice(at: indexPath)
+        configure(cell, with: device)
         return cell
     }
     
@@ -159,5 +130,50 @@ extension DiscoverViewController: UITableViewDataSource {
         let view = UIView()
         view.backgroundColor = .clear
         return view
+    }
+}
+
+// MARK: - BluetoothManager delegate
+extension DiscoverViewController: BluetoothManagerDelegate {
+    func bluetoothManagerDidUpdateState(_ manager: BluetoothManager, _ state: CBManagerState) {
+        switch state {
+        case .poweredOn:
+            statusBar.status = .working("Searching...")
+        case .poweredOff:
+            statusBar.status = .failed("Please turn on the bluetooth")
+            displayAlert(title: "Bluetooth unavailable", msg: "Please make sure your bluetooth turned on", hasCancel: false, action: {})
+        case .unauthorized:
+            statusBar.status = .failed("Bluetooth is not available")
+            displayAlert(title: "Bluetooth unavailable", msg: "Please check your bluetooth setting", hasCancel: false, action: {})
+        default:
+            statusBar.status = .failed("Bluetooth is not available")
+            displayAlert(title: "Bluetooth unavailable", msg: "Please make sure your bluetooth turned on", hasCancel: false, action: {})
+        }
+    }
+    
+    func bluetoothDidDiscoverPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        print("Did discover: \(peripheral.name ?? "")")
+        guard let name = peripheral.name, let model = DeviceModel.from(name) else { return }
+        guard !discoveredPeripherals.contains(peripheral) else { return }
+        discoveredPeripherals.insert(peripheral)
+        
+        let device = Device(model: model, name: name)
+        let newDeviceViewController = NewDeviceViewController(device: device) {
+            BluetoothManager.shared.connect(peripheral)
+        }
+        
+        self.present(newDeviceViewController, animated: true, completion: nil)
+    }
+    
+    func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        print("Did connect: \(peripheral.name ?? "")")
+        guard let name = peripheral.name, let model = DeviceModel.from(name) else { return }
+        var device = Device(model: model, name: name)
+        device.peripheral = peripheral
+        devices.append(device)
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 }

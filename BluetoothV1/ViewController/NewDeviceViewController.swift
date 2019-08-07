@@ -16,20 +16,29 @@ class NewDeviceViewController: UIViewController {
     @IBOutlet weak var deviceNumberLabel: UILabel!
     @IBOutlet weak var addButton: UIButton!
     
-    init() {
+    let device: Device
+    var action: (() -> Void)?
+    
+    init(device: Device, action: (() -> Void)?) {
+        self.action = action
+        self.device = device
         super.init(nibName: nil, bundle: nil)
         modalTransitionStyle = .crossDissolve
         modalPresentationStyle = .fullScreen
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError()
     }
     
     @IBAction func cancelButtonTapped(_ sender: UIButton) {
+        
+        dismiss(animated: true, completion: nil)
     }
     
     @IBAction func addButtonTapped(_ sender: UIButton) {
+        action?()
+        dismiss(animated: true, completion: nil)
     }
     
     override func viewDidLoad() {
@@ -43,8 +52,11 @@ class NewDeviceViewController: UIViewController {
 extension NewDeviceViewController {
     private func setup() {
         deviceIconBackgroundView.roundedCorner()
-        deviceNameLabel.font = UIFont.avenirNext(bold: .medium, size: UIFont.middleFontSize)
+        deviceNameLabel.font = UIFont.avenirNext(bold: .medium, size: UIFont.largeFontSize)
         deviceNumberLabel.font = UIFont.avenirNext(bold: .medium, size: UIFont.middleFontSize)
         addButton.roundedCorner()
+        
+        deviceNameLabel.text = device.displayName
+        deviceNumberLabel.text = device.number
     }
 }

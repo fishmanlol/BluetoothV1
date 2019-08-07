@@ -58,11 +58,14 @@ enum DeviceModel: CaseIterable {
     case PM10
     case WT01
     case SpO2
+    case TEMP03
     
     static func from(_ name: String) -> DeviceModel? {
         if name.prefix(4) == "PM10" { return .PM10 }
         if name.prefix(4) == "SpO2" { return .SpO2 }
         if name.prefix(4) == "WT01" { return .WT01 }
+        if name.prefix(6) == "TEMP03" { return .TEMP03 }
+        
         return nil
     }
     
@@ -74,6 +77,8 @@ enum DeviceModel: CaseIterable {
             return "WT01"
         case .SpO2:
             return "SpO2"
+        case .TEMP03:
+            return "TEMP03"
         }
     }
     
@@ -85,7 +90,8 @@ enum DeviceModel: CaseIterable {
 struct Device {
     let model: DeviceModel
     let name: String
-    var batches: [[Date: Record]] = []
+    var batches: [Batch] = []
+    var peripheral: CBPeripheral?
     
     var displayName: String {
         return model.displayName
@@ -98,12 +104,31 @@ struct Device {
     var number: String {
         return "#" + String(name.suffix(4))
     }
+    
+    mutating func addBatch(_ batch: Batch) {
+        batches.append(batch)
+    }
+}
+
+extension Device: Hashable {
+    static func == (lhs: Device, rhs: Device) -> Bool {
+        return lhs.name == rhs.name
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
 }
 
 struct Record {
     let name: String
     var value: Any?
     var time: Date?
+}
+
+struct Batch {
+    var date: Date?
+    var records: [Record] = []
 }
 
 

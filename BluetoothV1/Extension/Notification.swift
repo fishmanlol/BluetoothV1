@@ -17,6 +17,8 @@ extension Notification {
     
     // MARK: - Peripheral notification name
     static let didDiscoverPeripheral: NSNotification.Name = NSNotification.Name(rawValue: "didDiscoverPeripheral")
+    static let didDisallowedPeripheral: NSNotification.Name = NSNotification.Name(rawValue: "didDisallowedPeripheral")
+    static let didAllowedPeripheral: NSNotification.Name = NSNotification.Name(rawValue: "didAllowedPeripheral")
     
     static func post(name: NSNotification.Name, object: Any? = nil, userInfo: [AnyHashable: Any]? = nil) {
         NotificationCenter.default.post(name: name, object: object, userInfo: userInfo)

@@ -27,10 +27,10 @@
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                 </imageView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mKv-dM-Ufx">
-                    <rect key="frame" x="132" y="124" width="150" height="150"/>
+                    <rect key="frame" x="137" y="124" width="140" height="140"/>
                     <subviews>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pulse_oximeter" translatesAutoresizingMaskIntoConstraints="NO" id="c9g-Pg-tU3">
-                            <rect key="frame" x="25" y="25" width="100" height="100"/>
+                            <rect key="frame" x="20" y="20" width="100" height="100"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="100" id="IKV-LI-pC9"/>
                                 <constraint firstAttribute="height" constant="100" id="jhe-WV-8iF"/>
@@ -40,19 +40,19 @@
                     <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
                         <constraint firstItem="c9g-Pg-tU3" firstAttribute="centerY" secondItem="mKv-dM-Ufx" secondAttribute="centerY" id="COE-X7-psz"/>
-                        <constraint firstAttribute="width" constant="150" id="FQN-7F-4jh"/>
+                        <constraint firstAttribute="width" constant="140" id="FQN-7F-4jh"/>
                         <constraint firstItem="c9g-Pg-tU3" firstAttribute="centerX" secondItem="mKv-dM-Ufx" secondAttribute="centerX" id="YWQ-LC-WmM"/>
-                        <constraint firstAttribute="height" constant="150" id="mbP-EK-YCb"/>
+                        <constraint firstAttribute="height" constant="140" id="mbP-EK-YCb"/>
                     </constraints>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yiG-Ws-YEh">
-                    <rect key="frame" x="186" y="304" width="42" height="20.5"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <rect key="frame" x="185" y="294" width="44" height="21.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iwT-B1-xyx">
-                    <rect key="frame" x="186" y="334.5" width="42" height="20.5"/>
+                    <rect key="frame" x="186" y="325.5" width="42" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>

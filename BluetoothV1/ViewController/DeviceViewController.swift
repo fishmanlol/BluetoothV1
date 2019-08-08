@@ -12,7 +12,6 @@ class DeviceViewController: UIViewController {
     weak var tableView: UITableView!
     weak var fetchButton: UIButton!
     weak var statusBar: StatusBar!
-    weak var alphaView: UIView!
     
     private var device: Device
     
@@ -38,7 +37,17 @@ class DeviceViewController: UIViewController {
     
     @objc func fetchButtonTapped(sender: UIButton) {
         //fake data
-        let batch = Batch(date: Date(), records: [Record(name: "Temperature", value: 98.6, time: Date())])
+        let batch: Batch
+        switch device.model {
+        case .TEMP03:
+            let randomTemperature = Double.random(in: ClosedRange(uncheckedBounds: (lower: 90, upper: 110))).rounded()
+            batch = Batch(date: Date(), records: [Record(name: Record.nameOfTemperature, value: randomTemperature)])
+        case .NIBP03, .NIBP04:
+            batch = Batch(date: Date(), records: [Record(name: Record.nameOfSystolic, value: 141.0), Record(name: Record.nameOfDiastolic, value: 80.0), Record(name: Record.nameOfPulse, value: 72.0)])
+        default:
+            fatalError()
+        }
+
         device.addBatch(batch)
         tableView.reloadData()
     }
@@ -57,8 +66,10 @@ extension DeviceViewController {
         switch device.model {
         case .TEMP03:
             tableView.register(UINib(nibName: "TemperatureCell", bundle: nil), forCellReuseIdentifier: "TEMPERATURECELL")
+        case .NIBP03, .NIBP04:
+            tableView.register(UINib(nibName: "BloodPressureCell", bundle: nil), forCellReuseIdentifier: "BLOODPRESSURECELL")
         default:
-            break
+            fatalError()
         }
     }
     
@@ -87,15 +98,6 @@ extension DeviceViewController {
         tableView.dataSource = self
         self.tableView = tableView
         view.addSubview(tableView)
-        
-        let alphaView = UIView(frame: CGRect(x: 0, y: UIScreen.main.bounds.height - 200, width: view.bounds.width, height: 200))
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = alphaView.bounds
-        gradientLayer.colors = [UIColor.white.cgColor, UIColor(white: 1, alpha: 0).cgColor]
-        gradientLayer.locations = [0.2, 0.8]
-        alphaView.layer.addSublayer(gradientLayer)
-        self.alphaView = alphaView
-        view.addSubview(alphaView)
         
         let fetchButton = UIButton(type: .system)
         fetchButton.setTitle("Fetch", for: .normal)
@@ -133,10 +135,44 @@ extension DeviceViewController {
         switch device.model {
         case .TEMP03:
             guard let temperatureCell = cell as? TemperatureCell else { return }
-            temperatureCell.temperatureLabel.textColor = UIColor.black
-            temperatureCell.unitLabel.textColor = UIColor.black
+            guard let temperatureValue = batch.records.first?.value as? Double else { return }
             temperatureCell.timeLabel.text = batch.date?.formattedString
-            temperatureCell.temperatureLabel.text = "\(batch.records.first?.value as! Double)"
+            temperatureCell.temperatureLabel.text = "\(temperatureValue)"
+            
+            if isTemperatureLow(temperatureValue) {
+                temperatureCell.temperatureLabel.textColor = UIColor(r: 38, g: 148, b: 189)
+                temperatureCell.unitLabel.textColor = UIColor(r: 38, g: 148, b: 189)
+            } else if isTemperatureHigh(temperatureValue) {
+                temperatureCell.temperatureLabel.textColor = UIColor(r: 255, g: 40, b: 0)
+                temperatureCell.unitLabel.textColor = .black
+            } else {
+                temperatureCell.temperatureLabel.textColor = .black
+                temperatureCell.unitLabel.textColor = .black
+            }
+            
+            
+        case .NIBP03, .NIBP04:
+            guard let bloodPressureCell = cell as? BloodPressureCell else { return }
+            bloodPressureCell.timeLabel.text = batch.date?.formattedString
+            for record in batch.records {
+                if record.name == Record.nameOfSystolic, let systolicValue = record.value as? Double {
+                    bloodPressureCell.sysLabel.textColor = .black
+                    bloodPressureCell.sysLabel.text = "\(systolicValue)"
+                    continue
+                }
+                
+                if record.name == Record.nameOfDiastolic, let diastolicValue = record.value as? Double {
+                    bloodPressureCell.diaLabel.textColor = .black
+                    bloodPressureCell.diaLabel.text = "\(diastolicValue)"
+                    continue
+                }
+                
+                if record.name == Record.nameOfPulse, let pulseValue = record.value as? Double {
+                    bloodPressureCell.pulseLabel.textColor = .black
+                    bloodPressureCell.pulseLabel.text = "\(pulseValue)"
+                    continue
+                }
+            }
         default:
             fatalError()
         }
@@ -175,17 +211,18 @@ extension DeviceViewController {
 // MARK: - Table view delegate
 extension DeviceViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 180
+        switch device.model {
+        case .TEMP03:
+            return 180
+        case .NIBP03, .NIBP04:
+            return 260
+        default:
+            fatalError()
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 30
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
-        
-        
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -208,6 +245,8 @@ extension DeviceViewController: UITableViewDataSource {
         switch device.model {
         case .TEMP03:
             cell = tableView.dequeueReusableCell(withIdentifier: "TEMPERATURECELL", for: indexPath)
+        case .NIBP03, .NIBP04:
+            cell = tableView.dequeueReusableCell(withIdentifier: "BLOODPRESSURECELL", for: indexPath)
         default:
             fatalError()
         }

@@ -36,6 +36,9 @@
 		8E2765B422F4EBDB00E2C70F /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2765B322F4EBDB00E2C70F /* UIFont.swift */; };
 		8E5288B222F4EEF600AFB2A4 /* DeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5288B022F4EEF600AFB2A4 /* DeviceCell.swift */; };
 		8E5288B322F4EEF600AFB2A4 /* DeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E5288B122F4EEF600AFB2A4 /* DeviceCell.xib */; };
+		8E8803F022FBA695007CA201 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8803EF22FBA695007CA201 /* Functions.swift */; };
+		8EDAE52522FB47A0002D66D3 /* BloodPressureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDAE52322FB47A0002D66D3 /* BloodPressureCell.swift */; };
+		8EDAE52622FB47A0002D66D3 /* BloodPressureCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8EDAE52422FB47A0002D66D3 /* BloodPressureCell.xib */; };
 		8EF1C1ED22F4F843009A8CB4 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF1C1EC22F4F843009A8CB4 /* DiscoverViewModel.swift */; };
 		8EF1C1F022F4FECB009A8CB4 /* SpinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */; };
 		8EF1C1F122F4FECB009A8CB4 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */; };
@@ -76,6 +79,9 @@
 		8E2765B322F4EBDB00E2C70F /* UIFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
 		8E5288B022F4EEF600AFB2A4 /* DeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCell.swift; sourceTree = "<group>"; };
 		8E5288B122F4EEF600AFB2A4 /* DeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeviceCell.xib; sourceTree = "<group>"; };
+		8E8803EF22FBA695007CA201 /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
+		8EDAE52322FB47A0002D66D3 /* BloodPressureCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BloodPressureCell.swift; sourceTree = "<group>"; };
+		8EDAE52422FB47A0002D66D3 /* BloodPressureCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BloodPressureCell.xib; sourceTree = "<group>"; };
 		8EF1C1EC22F4F843009A8CB4 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpinView.swift; sourceTree = "<group>"; };
 		8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
@@ -176,6 +182,7 @@
 		8E27659622F49DBD00E2C70F /* BluetoothV1 */ = {
 			isa = PBXGroup;
 			children = (
+				8E8803EE22FBA686007CA201 /* Utils */,
 				8E1FC1AE22F89E1F00A8C9FF /* SDK */,
 				8E0A663E22F89C1C0096CE6E /* ViewModel */,
 				8E0A663D22F89C0C0096CE6E /* ViewController */,
@@ -217,12 +224,22 @@
 			children = (
 				8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */,
 				8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */,
+				8EDAE52322FB47A0002D66D3 /* BloodPressureCell.swift */,
+				8EDAE52422FB47A0002D66D3 /* BloodPressureCell.xib */,
 				8E01BD3F22FA33A90064219D /* TemperatureCell.swift */,
 				8E01BD4022FA33A90064219D /* TemperatureCell.xib */,
 				8E5288B022F4EEF600AFB2A4 /* DeviceCell.swift */,
 				8E5288B122F4EEF600AFB2A4 /* DeviceCell.xib */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		8E8803EE22FBA686007CA201 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				8E8803EF22FBA695007CA201 /* Functions.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		D06EB257B0BBF77A0CE20CE0 /* Pods */ = {
@@ -300,6 +317,7 @@
 				8E1FC1C822F8F9AE00A8C9FF /* NewDeviceViewController.xib in Resources */,
 				102DE2DD22F87B0E002B1897 /* progress_bar.json in Resources */,
 				8E5288B322F4EEF600AFB2A4 /* DeviceCell.xib in Resources */,
+				8EDAE52622FB47A0002D66D3 /* BloodPressureCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +382,7 @@
 				8E5288B222F4EEF600AFB2A4 /* DeviceCell.swift in Sources */,
 				8E2765B422F4EBDB00E2C70F /* UIFont.swift in Sources */,
 				8E1FC1BC22F8AD3E00A8C9FF /* Notification.swift in Sources */,
+				8E8803F022FBA695007CA201 /* Functions.swift in Sources */,
 				8E1FC1C722F8F9AE00A8C9FF /* NewDeviceViewController.swift in Sources */,
 				8E2765AE22F4A35300E2C70F /* DiscoverViewController.swift in Sources */,
 				102DE2DB22F7C656002B1897 /* WaitingViewController.swift in Sources */,
@@ -371,6 +390,7 @@
 				8E01BD4422FA54820064219D /* Date.swift in Sources */,
 				8E27659822F49DBD00E2C70F /* AppDelegate.swift in Sources */,
 				8E2765AC22F49DE900E2C70F /* Record.swift in Sources */,
+				8EDAE52522FB47A0002D66D3 /* BloodPressureCell.swift in Sources */,
 				8E1FC1CA22F906DD00A8C9FF /* UIView.swift in Sources */,
 				8EF1C1F122F4FECB009A8CB4 /* StatusBar.swift in Sources */,
 			);

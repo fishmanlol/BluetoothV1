@@ -39,7 +39,6 @@ extension DeviceCell {
         deviceNumberLabel.font = UIFont.avenirNext(bold: .regular, size: 15)
         deviceNumberLabel.textColor = .gray
         deviceIconImageView.contentMode = .scaleAspectFit
-        selectionStyle = .none
         
         addShadow()
     }

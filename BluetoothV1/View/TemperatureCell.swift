@@ -14,12 +14,4 @@ class TemperatureCell: UITableViewCell {
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var unitLabel: UILabel!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        selectionStyle = .none
-    }
-    
-    
 }

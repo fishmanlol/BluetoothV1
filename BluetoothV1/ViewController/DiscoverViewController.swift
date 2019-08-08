@@ -14,7 +14,9 @@ class DiscoverViewController: UIViewController {
     weak var continueButton: UIButton!
     weak var statusBar: StatusBar!
     
-    private var devices: [Device] = [Device(model: .TEMP03, name: "TEMP030011", batches: [], peripheral: nil)]
+    private var devices: [Device] = [Device(model: .TEMP03, name: "TEMP030011", batches: [], peripheral: nil),
+                                    Device(model: .NIBP03, name: "NIBP030001", batches: [], peripheral: nil),
+                                    Device(model: .NIBP04, name: "NIBP040001", batches: [], peripheral: nil)]
     var discoveredPeripherals: Set<CBPeripheral> = []
     
     override func viewDidLoad() {

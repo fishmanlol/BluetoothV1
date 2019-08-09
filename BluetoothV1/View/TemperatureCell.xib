@@ -17,7 +17,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="522" height="198"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="redraw" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cell_background_1" translatesAutoresizingMaskIntoConstraints="NO" id="NON-LW-yYd">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cell_background_1" translatesAutoresizingMaskIntoConstraints="NO" id="NON-LW-yYd">
                         <rect key="frame" x="30" y="30" width="462" height="158"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="_ _" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MAJ-br-s4h">

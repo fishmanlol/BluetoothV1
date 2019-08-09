@@ -41,9 +41,9 @@ class DeviceViewController: UIViewController {
         switch device.model {
         case .TEMP03:
             let randomTemperature = Double.random(in: ClosedRange(uncheckedBounds: (lower: 90, upper: 110))).rounded()
-            batch = Batch(date: Date(), records: [Record(name: Record.nameOfTemperature, value: randomTemperature)])
+            batch = Batch(date: Date(), records: [Record(type: .temperature, value: randomTemperature)])
         case .NIBP03, .NIBP04:
-            batch = Batch(date: Date(), records: [Record(name: Record.nameOfSystolic, value: 141.0), Record(name: Record.nameOfDiastolic, value: 80.0), Record(name: Record.nameOfPulse, value: 72.0)])
+            batch = Batch(date: Date(), records: [Record(type: .systolic, value: 141.0), Record(type: .diastolic, value: 80.0), Record(type: .pulse, value: 72.0)])
         default:
             fatalError()
         }
@@ -63,14 +63,16 @@ extension DeviceViewController {
     }
     
     private func registerCell() {
-        switch device.model {
-        case .TEMP03:
-            tableView.register(UINib(nibName: "TemperatureCell", bundle: nil), forCellReuseIdentifier: "TEMPERATURECELL")
-        case .NIBP03, .NIBP04:
-            tableView.register(UINib(nibName: "BloodPressureCell", bundle: nil), forCellReuseIdentifier: "BLOODPRESSURECELL")
-        default:
-            fatalError()
-        }
+        tableView.register(BatchCell.self, forCellReuseIdentifier: "BATCHCELL")
+//        switch device.model {
+//        case .TEMP03:
+////            tableView.register(UINib(nibName: "TemperatureCell", bundle: nil), forCellReuseIdentifier: "TEMPERATURECELL")
+//            tableView.register(BatchCell.self, forCellReuseIdentifier: "BATCHCELL")
+//        case .NIBP03, .NIBP04:
+//            tableView.register(UINib(nibName: "BloodPressureCell", bundle: nil), forCellReuseIdentifier: "BLOODPRESSURECELL")
+//        default:
+//            fatalError()
+//        }
     }
     
     private func configureNavigationBar() {
@@ -91,6 +93,8 @@ extension DeviceViewController {
         view.addSubview(statusBar)
         
         let tableView = UITableView()
+        tableView.estimatedRowHeight = 100
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
@@ -144,7 +148,7 @@ extension DeviceViewController {
                 temperatureCell.unitLabel.textColor = UIColor(r: 38, g: 148, b: 189)
             } else if isTemperatureHigh(temperatureValue) {
                 temperatureCell.temperatureLabel.textColor = UIColor(r: 255, g: 40, b: 0)
-                temperatureCell.unitLabel.textColor = .black
+                temperatureCell.unitLabel.textColor = UIColor(r: 255, g: 40, b: 0)
             } else {
                 temperatureCell.temperatureLabel.textColor = .black
                 temperatureCell.unitLabel.textColor = .black
@@ -210,16 +214,16 @@ extension DeviceViewController {
 
 // MARK: - Table view delegate
 extension DeviceViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch device.model {
-        case .TEMP03:
-            return 180
-        case .NIBP03, .NIBP04:
-            return 260
-        default:
-            fatalError()
-        }
-    }
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        switch device.model {
+//        case .TEMP03:
+//            return 180
+//        case .NIBP03, .NIBP04:
+//            return 260
+//        default:
+//            fatalError()
+//        }
+//    }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 30
@@ -241,21 +245,39 @@ extension DeviceViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UITableViewCell
-        switch device.model {
-        case .TEMP03:
-            cell = tableView.dequeueReusableCell(withIdentifier: "TEMPERATURECELL", for: indexPath)
-        case .NIBP03, .NIBP04:
-            cell = tableView.dequeueReusableCell(withIdentifier: "BLOODPRESSURECELL", for: indexPath)
-        default:
-            fatalError()
-        }
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "BATCHCELL", for: indexPath) as! BatchCell
         if getBatchCount() != 0 {
             let batch = device.batches[indexPath.section]
-            configure(cell, with: batch)
+            cell.configure(with: batch, for: device.model)
+        } else {
+            cell.configure(with: Batch(), for: device.model)
         }
+        
         return cell
+        
+//        switch device.model {
+//        case .TEMP03:
+////            cell = tableView.dequeueReusableCell(withIdentifier: "TEMPERATURECELL", for: indexPath)
+//            let cell = tableView.dequeueReusableCell(withIdentifier: "BATCHCELL", for: indexPath) as! BatchCell
+//
+//            if getBatchCount() != 0 {
+//                let batch = device.batches[indexPath.section]
+//                cell.configure(with: batch, for: device.model)
+//            } else {
+//                cell.configure(with: Batch(), for: device.model)
+//            }
+//
+//            return cell
+//        case .NIBP03, .NIBP04:
+//            let cell = tableView.dequeueReusableCell(withIdentifier: "BLOODPRESSURECELL", for: indexPath)
+//            if getBatchCount() != 0 {
+//                let batch = device.batches[indexPath.section]
+//                configure(cell, with: batch)
+//            }
+//            return cell
+//        default:
+//            fatalError()
+//        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

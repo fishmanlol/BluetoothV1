@@ -42,6 +42,7 @@
 		8EF1C1ED22F4F843009A8CB4 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF1C1EC22F4F843009A8CB4 /* DiscoverViewModel.swift */; };
 		8EF1C1F022F4FECB009A8CB4 /* SpinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */; };
 		8EF1C1F122F4FECB009A8CB4 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */; };
+		8EF7B24D22FC97AB0081712A /* BatchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF7B24C22FC97AB0081712A /* BatchCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +86,7 @@
 		8EF1C1EC22F4F843009A8CB4 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpinView.swift; sourceTree = "<group>"; };
 		8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
+		8EF7B24C22FC97AB0081712A /* BatchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchCell.swift; sourceTree = "<group>"; };
 		E0DB98F98727075917CD0A91 /* Pods-BluetoothV1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluetoothV1.release.xcconfig"; path = "Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1.release.xcconfig"; sourceTree = "<group>"; };
 		F0362CEF82C84DE0A7F29CEC /* Pods_BluetoothV1.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluetoothV1.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F384271F5AC77F48DCA69DE5 /* Pods-BluetoothV1.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluetoothV1.debug.xcconfig"; path = "Target Support Files/Pods-BluetoothV1/Pods-BluetoothV1.debug.xcconfig"; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 			children = (
 				8EF1C1EE22F4FECB009A8CB4 /* SpinView.swift */,
 				8EF1C1EF22F4FECB009A8CB4 /* StatusBar.swift */,
+				8EF7B24C22FC97AB0081712A /* BatchCell.swift */,
 				8EDAE52322FB47A0002D66D3 /* BloodPressureCell.swift */,
 				8EDAE52422FB47A0002D66D3 /* BloodPressureCell.xib */,
 				8E01BD3F22FA33A90064219D /* TemperatureCell.swift */,
@@ -387,6 +390,7 @@
 				8E2765AE22F4A35300E2C70F /* DiscoverViewController.swift in Sources */,
 				102DE2DB22F7C656002B1897 /* WaitingViewController.swift in Sources */,
 				8E1FC1C222F8E5EA00A8C9FF /* DeviceViewModel.swift in Sources */,
+				8EF7B24D22FC97AB0081712A /* BatchCell.swift in Sources */,
 				8E01BD4422FA54820064219D /* Date.swift in Sources */,
 				8E27659822F49DBD00E2C70F /* AppDelegate.swift in Sources */,
 				8E2765AC22F49DE900E2C70F /* Record.swift in Sources */,

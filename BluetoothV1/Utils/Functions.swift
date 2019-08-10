@@ -49,27 +49,3 @@ func isDiastolicSlightlyHigh(_ value: Double) -> Bool {
 func isDiastolicHigh(_ value: Double) -> Bool {
     return value > 90
 }
-
-//func isSystolicNormal(_ value: Double) -> Bool {
-//    return value >= 90 && value <= 120
-//}
-//
-//func isSystolicWarn(_ value: Double) -> Bool {
-//    return value > 120 && value <= 140
-//}
-//
-//func isSystolicAbnormal(_ value: Double) -> Bool {
-//    return value > 140 || value < 90
-//}
-//
-//func isDiastolicNormal(_ value: Double) -> Bool {
-//    return value >= 60 && value <= 80
-//}
-//
-//func isDiastolicWarn(_ value: Double) -> Bool {
-//    return value > 80 && value <= 90
-//}
-//
-//func isDiastolicAbnormal(_ value: Double) -> Bool {
-//    return value < 60 || value > 90
-//}

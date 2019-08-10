@@ -11,7 +11,8 @@ import Foundation
 extension Date {
     var formattedString: String {
         if isToday {
-            return "\(hour): \(minute)"
+            
+            return minute > 9 ? "\(hour):\(minute)" : "\(hour):0\(minute)"
         } else {
             return "\(month)/\(day)/\(year)"
         }

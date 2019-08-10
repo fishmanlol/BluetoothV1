@@ -14,15 +14,22 @@ class DiscoverViewController: UIViewController {
     weak var continueButton: UIButton!
     weak var statusBar: StatusBar!
     
-    private var devices: [Device] = [Device(model: .TEMP03, name: "TEMP030011", batches: [], peripheral: nil),
-                                    Device(model: .NIBP03, name: "NIBP030001", batches: [], peripheral: nil),
-                                    Device(model: .NIBP04, name: "NIBP040001", batches: [], peripheral: nil)]
-    var discoveredPeripherals: Set<CBPeripheral> = []
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        BluetoothManager.shared.scan()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        BluetoothManager.shared.stopScan()
     }
 }
 
@@ -56,7 +63,7 @@ extension DiscoverViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
-        tableView.register(UINib(nibName: "DeviceCell", bundle: nil), forCellReuseIdentifier: "DEVICECELL")
+        tableView.register(UINib(nibName: "DeviceCell", bundle: nil), forCellReuseIdentifier: Constant.deviceCell)
         tableView.delegate = self
         tableView.dataSource = self
         self.tableView = tableView
@@ -79,13 +86,6 @@ extension DiscoverViewController {
         cell.deviceNumberLabel.text = device.number
     }
     
-    private func getDeviceCount() -> Int {
-        return devices.count
-    }
-    
-    private func getDevice(at indexPath: IndexPath) -> Device {
-        return devices[indexPath.section]
-    }
 }
 
 // MARK: - Table view delegate
@@ -101,7 +101,7 @@ extension DiscoverViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         
-        let device = getDevice(at: indexPath)
+        let device = DeviceStore.shared.getDevice(at: indexPath)
         let deviceViewController = DeviceViewController(device: device)
         navigationController?.pushViewController(deviceViewController, animated: true)
     }
@@ -114,7 +114,7 @@ extension DiscoverViewController: UITableViewDelegate {
 // MARK: - Table view datasource
 extension DiscoverViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return getDeviceCount()
+        return  DeviceStore.shared.getDeviceCount()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -122,8 +122,8 @@ extension DiscoverViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "DEVICECELL", for: indexPath) as! DeviceCell
-        let device = getDevice(at: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constant.deviceCell, for: indexPath) as! DeviceCell
+        let device =  DeviceStore.shared.getDevice(at: indexPath)
         configure(cell, with: device)
         return cell
     }
@@ -155,24 +155,37 @@ extension DiscoverViewController: BluetoothManagerDelegate {
     
     func bluetoothDidDiscoverPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
         print("Did discover: \(peripheral.name ?? "")")
+        //exclude the peripherals which in garbage bag the user has declined to connect
+        guard !BluetoothManager.shared.isGarbage(peripheral) else { return }
+        //exclude the peripherals we don't need
         guard let name = peripheral.name, let model = DeviceModel.from(name) else { return }
-        guard !discoveredPeripherals.contains(peripheral) else { return }
-        discoveredPeripherals.insert(peripheral)
-        
-        let device = Device(model: model, name: name)
-        let newDeviceViewController = NewDeviceViewController(device: device) {
+        //If this peripheral is a new deivce which not in accept bag, we need pop up a page to make user decide whether connect or not
+        if BluetoothManager.shared.isNewDevice(peripheral) {
+            let device = Device(model: model, name: name)
+            let newDeviceViewController = NewDeviceViewController(device: device) { accpet in
+                if accpet {
+                    BluetoothManager.shared.connect(peripheral)
+                } else {
+                    BluetoothManager.shared.addToGarbageBag(peripheral)
+                }
+            }
+            
+            self.present(newDeviceViewController, animated: true, completion: nil)
+        } else { // Not a new device, in our accept bag
             BluetoothManager.shared.connect(peripheral)
         }
-        
-        self.present(newDeviceViewController, animated: true, completion: nil)
     }
     
     func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
         print("Did connect: \(peripheral.name ?? "")")
         guard let name = peripheral.name, let model = DeviceModel.from(name) else { return }
+        guard !BluetoothManager.shared.hasAccepted(peripheral) else { return }
+        
+        BluetoothManager.shared.addToAcceptBag(peripheral)
+        
         var device = Device(model: model, name: name)
         device.peripheral = peripheral
-        devices.append(device)
+         DeviceStore.shared.addDevice(device)
         
         DispatchQueue.main.async {
             self.tableView.reloadData()

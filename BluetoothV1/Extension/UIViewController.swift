@@ -25,4 +25,13 @@ extension UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
+    
+    func displayAlert(title: String? = nil, msg: String, dismissAfter seconds: TimeInterval = 1.35) {
+        let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+        present(alert, animated: true) {
+            Timer.scheduledTimer(withTimeInterval: seconds, repeats: false) { [weak self] _ in
+                self?.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
 }

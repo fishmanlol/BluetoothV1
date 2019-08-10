@@ -17,9 +17,9 @@ class NewDeviceViewController: UIViewController {
     @IBOutlet weak var addButton: UIButton!
     
     let device: Device
-    var action: (() -> Void)?
+    var action: ((Bool) -> Void)?
     
-    init(device: Device, action: (() -> Void)?) {
+    init(device: Device, action: ((Bool) -> Void)?) {
         self.action = action
         self.device = device
         super.init(nibName: nil, bundle: nil)
@@ -32,12 +32,12 @@ class NewDeviceViewController: UIViewController {
     }
     
     @IBAction func cancelButtonTapped(_ sender: UIButton) {
-        
+        action?(false)
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func addButtonTapped(_ sender: UIButton) {
-        action?()
+        action?(true)
         dismiss(animated: true, completion: nil)
     }
     

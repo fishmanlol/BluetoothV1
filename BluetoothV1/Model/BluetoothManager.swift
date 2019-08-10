@@ -12,17 +12,25 @@ protocol BluetoothManagerDelegate: class {
     func bluetoothManagerDidUpdateState(_ manager: BluetoothManager, _ state: CBManagerState)
     func bluetoothDidDiscoverPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral)
     func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral)
+    func bluetoothDidFailToConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral)
+    func bluetoothDidDisconnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral)
 }
 
 //Default implementation
 extension BluetoothManagerDelegate {
-    func bluetoothDidDiscoverPeripheral(_ peripheral: CBPeripheral) {}
+    func bluetoothDidDiscoverPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {}
+    func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {}
+    func bluetoothDidFailToConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {}
+    func bluetoothDidDisconnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {}
 }
 
 class BluetoothManager: NSObject {
     
     private var central: CBCentralManager!
     private let delegates: NSHashTable<AnyObject> = NSHashTable.weakObjects()
+    private var acceptBag: Set<CBPeripheral> = []
+    private var garbageBag: Set<CBPeripheral> = []
+    
     /**
      Singleton
      */
@@ -33,6 +41,38 @@ class BluetoothManager: NSObject {
     }
     
     //Public functions
+    public func isNewDevice(_ peripheral: CBPeripheral) -> Bool {
+        return !acceptBag.contains(peripheral) && !garbageBag.contains(peripheral)
+    }
+    
+    public func hasAccepted(_ peripheral: CBPeripheral) -> Bool {
+        return acceptBag.contains(peripheral)
+    }
+    
+    public func isGarbage(_ peripheral: CBPeripheral) -> Bool {
+        return garbageBag.contains(peripheral)
+    }
+    
+    public func addToAcceptBag(_ peripheral: CBPeripheral) {
+        acceptBag.insert(peripheral)
+    }
+    
+    public func addToGarbageBag(_ peripheral: CBPeripheral) {
+        garbageBag.insert(peripheral)
+    }
+    
+    public func emptyGarbageBag() {
+        garbageBag.removeAll()
+    }
+    
+    public func scan() {
+        central.scanForPeripherals(withServices: nil, options: nil)
+    }
+    
+    public func stopScan() {
+        central.stopScan()
+    }
+    
     public func connect(_ peripheral: CBPeripheral) {
         central.connect(peripheral, options: nil)
     }
@@ -75,12 +115,23 @@ extension BluetoothManager {
             (delegate as! BluetoothManagerDelegate).bluetoothDidConnectPeripheral(manager, peripheral)
         }
     }
+    
+    func bluetoothDidFailToConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        for delegate in delegates.allObjects.reversed() {
+            (delegate as! BluetoothManagerDelegate).bluetoothDidFailToConnectPeripheral(manager, peripheral)
+        }
+    }
+    
+    func bluetoothDidDisconnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        for delegate in delegates.allObjects.reversed() {
+            (delegate as! BluetoothManagerDelegate).bluetoothDidDisconnectPeripheral(manager, peripheral)
+        }
+    }
 }
 
 // MARK: - CBCentralManager delegate
 extension BluetoothManager: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        
         if case .poweredOn = central.state {
             central.scanForPeripherals(withServices: nil, options: nil)
         }
@@ -94,6 +145,14 @@ extension BluetoothManager: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         bluetoothDidConnectPeripheral(self, peripheral)
+    }
+    
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        bluetoothDidFailToConnectPeripheral(self, peripheral)
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        bluetoothDidDisconnectPeripheral(self, peripheral)
     }
 }
 

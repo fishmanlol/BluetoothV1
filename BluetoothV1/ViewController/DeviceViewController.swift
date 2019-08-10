@@ -36,43 +36,53 @@ class DeviceViewController: UIViewController {
     }
     
     @objc func fetchButtonTapped(sender: UIButton) {
+        guard BluetoothManager.shared.isBluetoothAvailable() else {
+            displayAlert(msg: Constant.bluetoothIsNotAvailable)
+            return
+        }
+        
+        guard let peripheralState = device.peripheral?.state else {
+            displayAlert(msg: Constant.unkownError)
+            return
+        }
+        
+        guard peripheralState == .connected else {
+            displayAlert(title: nil, msg: Constant.deviceNotConncted)
+            return
+        }
+        
+        
         //fake data
         let batch: Batch
         switch device.model {
-        case .TEMP03:
+        case .TEMP03, .TEMP01:
             let randomTemperature = Double.random(in: ClosedRange(uncheckedBounds: (lower: 90, upper: 110))).rounded()
             batch = Batch(date: Date(), records: [Record(type: .temperature, value: randomTemperature)])
         case .NIBP03, .NIBP04:
-            batch = Batch(date: Date(), records: [Record(type: .systolic, value: 141.0), Record(type: .diastolic, value: 80.0), Record(type: .pulse, value: 72.0)])
+            batch = Batch(date: Date(), records: [Record(type: .systolic, value: 121.0), Record(type: .diastolic, value: 80.0), Record(type: .pulse, value: 72.0)])
+        case .WT01:
+            let randomWeight = Double.random(in: ClosedRange(uncheckedBounds: (lower: 60, upper: 150))).rounded()
+            batch = Batch(date: Date(timeInterval: -500000, since: Date()), records: [Record(type: .weight, value: randomWeight), Record(type: .weight, value: randomWeight)])
         default:
             fatalError()
         }
 
-        device.addBatch(batch)
+         DeviceStore.shared.addBatch(batch, in: device)
         tableView.reloadData()
+    }
+    
+    deinit {
+        BluetoothManager.shared.removeDelegate(self)
     }
 }
 
 // MARK: - Private functions
 extension DeviceViewController {
     private func setup() {
+        BluetoothManager.shared.addDelegate(self)
         view.backgroundColor = .white
         configureNavigationBar()
         configureViews()
-        registerCell()
-    }
-    
-    private func registerCell() {
-        tableView.register(BatchCell.self, forCellReuseIdentifier: "BATCHCELL")
-//        switch device.model {
-//        case .TEMP03:
-////            tableView.register(UINib(nibName: "TemperatureCell", bundle: nil), forCellReuseIdentifier: "TEMPERATURECELL")
-//            tableView.register(BatchCell.self, forCellReuseIdentifier: "BATCHCELL")
-//        case .NIBP03, .NIBP04:
-//            tableView.register(UINib(nibName: "BloodPressureCell", bundle: nil), forCellReuseIdentifier: "BLOODPRESSURECELL")
-//        default:
-//            fatalError()
-//        }
     }
     
     private func configureNavigationBar() {
@@ -93,6 +103,7 @@ extension DeviceViewController {
         view.addSubview(statusBar)
         
         let tableView = UITableView()
+        tableView.register(BatchCell.self, forCellReuseIdentifier: Constant.batchCell)
         tableView.estimatedRowHeight = 100
         tableView.rowHeight = UITableView.automaticDimension
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -135,96 +146,33 @@ extension DeviceViewController {
         }
     }
     
-    private func configure(_ cell: UITableViewCell, with batch: Batch) {
-        switch device.model {
-        case .TEMP03:
-            guard let temperatureCell = cell as? TemperatureCell else { return }
-            guard let temperatureValue = batch.records.first?.value as? Double else { return }
-            temperatureCell.timeLabel.text = batch.date?.formattedString
-            temperatureCell.temperatureLabel.text = "\(temperatureValue)"
-            
-            if isTemperatureLow(temperatureValue) {
-                temperatureCell.temperatureLabel.textColor = UIColor(r: 38, g: 148, b: 189)
-                temperatureCell.unitLabel.textColor = UIColor(r: 38, g: 148, b: 189)
-            } else if isTemperatureHigh(temperatureValue) {
-                temperatureCell.temperatureLabel.textColor = UIColor(r: 255, g: 40, b: 0)
-                temperatureCell.unitLabel.textColor = UIColor(r: 255, g: 40, b: 0)
-            } else {
-                temperatureCell.temperatureLabel.textColor = .black
-                temperatureCell.unitLabel.textColor = .black
-            }
-            
-            
-        case .NIBP03, .NIBP04:
-            guard let bloodPressureCell = cell as? BloodPressureCell else { return }
-            bloodPressureCell.timeLabel.text = batch.date?.formattedString
-            for record in batch.records {
-                if record.name == Record.nameOfSystolic, let systolicValue = record.value as? Double {
-                    bloodPressureCell.sysLabel.textColor = .black
-                    bloodPressureCell.sysLabel.text = "\(systolicValue)"
-                    continue
-                }
-                
-                if record.name == Record.nameOfDiastolic, let diastolicValue = record.value as? Double {
-                    bloodPressureCell.diaLabel.textColor = .black
-                    bloodPressureCell.diaLabel.text = "\(diastolicValue)"
-                    continue
-                }
-                
-                if record.name == Record.nameOfPulse, let pulseValue = record.value as? Double {
-                    bloodPressureCell.pulseLabel.textColor = .black
-                    bloodPressureCell.pulseLabel.text = "\(pulseValue)"
-                    continue
-                }
-            }
-        default:
-            fatalError()
-        }
-    }
-    
-    private func getBatchCount() -> Int {
-        return device.batches.count
-    }
-    
-    private func getBatch(at indexPath: IndexPath) -> Batch {
-        return device.batches[indexPath.section]
-    }
     
     private func updateStatusBar() {
         if BluetoothManager.shared.isBluetoothAvailable() {
             guard let peripheral = device.peripheral else {
-                statusBar.status = .failed("Unkown Error")
+                statusBar.status = .failed(Constant.unkownError)
                 return
             }
             
             switch peripheral.state {
             case .connected:
-                statusBar.status = .succeed("Device is connected")
+                statusBar.status = .succeed(Constant.deviceConncted)
             case .connecting:
-                statusBar.status = .succeed("Device is connecting")
+                statusBar.status = .working(Constant.deviceConnecting)
             default:
-                statusBar.status = .succeed("Device is disconnected")
+                BluetoothManager.shared.connect(peripheral)
+                statusBar.status = .working(Constant.deviceSearch)
             }
             
         } else {
-            statusBar.status = .failed("Bluetooth is not available")
+            
+            statusBar.status = .failed(Constant.bluetoothIsNotAvailable)
         }
     }
 }
 
 // MARK: - Table view delegate
 extension DeviceViewController: UITableViewDelegate {
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        switch device.model {
-//        case .TEMP03:
-//            return 180
-//        case .NIBP03, .NIBP04:
-//            return 260
-//        default:
-//            fatalError()
-//        }
-//    }
-    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 30
     }
@@ -237,7 +185,8 @@ extension DeviceViewController: UITableViewDelegate {
 // MARK: - Table view datasource
 extension DeviceViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return getBatchCount() == 0 ? 1 : getBatchCount()
+        let batchCount = DeviceStore.shared.getBatchCount(in: device)
+        return batchCount == 0 ? 1 : batchCount
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -245,44 +194,53 @@ extension DeviceViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "BATCHCELL", for: indexPath) as! BatchCell
-        if getBatchCount() != 0 {
-            let batch = device.batches[indexPath.section]
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constant.batchCell, for: indexPath) as! BatchCell
+        if DeviceStore.shared.getBatchCount(in: device) != 0 {
+            let batch = DeviceStore.shared.getBatch(at: indexPath, in: device)
             cell.configure(with: batch, for: device.model)
         } else {
             cell.configure(with: Batch(), for: device.model)
         }
         
         return cell
-        
-//        switch device.model {
-//        case .TEMP03:
-////            cell = tableView.dequeueReusableCell(withIdentifier: "TEMPERATURECELL", for: indexPath)
-//            let cell = tableView.dequeueReusableCell(withIdentifier: "BATCHCELL", for: indexPath) as! BatchCell
-//
-//            if getBatchCount() != 0 {
-//                let batch = device.batches[indexPath.section]
-//                cell.configure(with: batch, for: device.model)
-//            } else {
-//                cell.configure(with: Batch(), for: device.model)
-//            }
-//
-//            return cell
-//        case .NIBP03, .NIBP04:
-//            let cell = tableView.dequeueReusableCell(withIdentifier: "BLOODPRESSURECELL", for: indexPath)
-//            if getBatchCount() != 0 {
-//                let batch = device.batches[indexPath.section]
-//                configure(cell, with: batch)
-//            }
-//            return cell
-//        default:
-//            fatalError()
-//        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
         view.backgroundColor = .clear
         return view
+    }
+}
+
+// MARK: - Bluetooth manager delegate
+extension DeviceViewController: BluetoothManagerDelegate {
+    func bluetoothManagerDidUpdateState(_ manager: BluetoothManager, _ state: CBManagerState) {
+        switch state {
+        case .poweredOn:
+            statusBar.status = .working(Constant.deviceSearch)
+        default:
+            statusBar.status = .failed(Constant.bluetoothIsNotAvailable)
+        }
+    }
+    
+    func bluetoothDidDiscoverPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        print(#function)
+    }
+    
+    func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        print(#function)
+        statusBar.status = .succeed(Constant.deviceConncted)
+    }
+    
+    func bluetoothDidDisconnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        print(#function)
+        manager.connect(peripheral)
+        statusBar.status = .working(Constant.deviceSearch)
+    }
+    
+    func bluetoothDidFailToConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        print(#function)
+        manager.connect(peripheral)
+        statusBar.status = .working(Constant.deviceSearch)
     }
 }

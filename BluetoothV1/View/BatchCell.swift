@@ -13,25 +13,25 @@ class BatchCell: UITableViewCell {
     weak var backgroundImageView: UIImageView!
     var model: DeviceModel?
     
-    private let temperatureCellBackgroundHeight: CGFloat = 140
+    private let singleRecordBackgroundHeight: CGFloat = 140
     private let bloodPressureBackgoundHeight: CGFloat = 240
     
     lazy var recordsView: UIView = {
         guard let model = model else { return UIView() }
         switch model {
-        case .TEMP03:
-            let temperatureRecordsView = TemperatureRecordsView()
-            contentView.addSubview(temperatureRecordsView)
-            temperatureRecordsView.snp.makeConstraints { (make) in
+        case .TEMP03, .WT01, .TEMP01:
+            let singleRecordView = SingleRecordView(model: model)
+            contentView.addSubview(singleRecordView)
+            singleRecordView.snp.makeConstraints { (make) in
                 make.centerX.left.top.equalTo(backgroundImageView)
                 make.bottom.equalTo(backgroundImageView).offset(-10)
             }
             
             backgroundImageView.snp.updateConstraints { (make) in
-                make.height.equalTo(temperatureCellBackgroundHeight)
+                make.height.equalTo(singleRecordBackgroundHeight)
             }
             
-            return temperatureRecordsView
+            return singleRecordView
         case .NIBP03, .NIBP04:
             let generalRecordsView = GeneralRecordsView(model: model)
             contentView.addSubview(generalRecordsView)
@@ -70,12 +70,12 @@ class BatchCell: UITableViewCell {
         timeLabel.text = batch.date?.formattedString ?? ""
         
         switch model {
-        case .TEMP03:
-            guard let recordsView = recordsView as? TemperatureRecordsView else { return }
+        case .TEMP03, .WT01, .TEMP01:
+            guard let recordsView = recordsView as? SingleRecordView else { return }
             recordsView.configure(with: batch)
         case .NIBP03, .NIBP04:
             guard let recordsView = recordsView as? GeneralRecordsView else { return }
-//            recordsView.configure(with: batch)
+            recordsView.configure(with: batch)
         default:
             fatalError()
         }
@@ -113,14 +113,15 @@ extension BatchCell {
     }
 }
 
-class TemperatureRecordsView: UIView {
-    weak var temperatureLabel: UILabel!
+class SingleRecordView: UIView {
+    weak var recordLabel: UILabel!
     weak var unitLabel: UILabel!
-    weak var indicator: UILabel!//↓↑
+    weak var indicator: UILabel!
+    var model: DeviceModel!
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
+    init(model: DeviceModel) {
+        super.init(frame: .zero)
+        self.model = model
         setup()
     }
     
@@ -129,59 +130,41 @@ class TemperatureRecordsView: UIView {
     }
     
     public func configure(with batch: Batch) {
-        if let record = batch.records.first, let value = record.value as? Double {
-            unitLabel.textColor = record.level.tintColor
-            temperatureLabel.textColor = record.level.tintColor
-            temperatureLabel.text = "\(value.rounded())"
-            indicator.textColor = record.level.tintColor
-            indicator.text = record.level.symbol
-        } else {
-            temperatureLabel.text = "_ _"
-            unitLabel.textColor = .gray
-            temperatureLabel.textColor = .gray
+        guard let record = batch.records.first, let value = record.value as? Double else {
+            return
         }
         
+        unitLabel.text = record.type.unit
+        unitLabel.textColor = UIColor(r: 38, g: 148, b: 189)
+        
+        recordLabel.text = "\(value.rounded())"
+        recordLabel.textColor = UIColor(r: 38, g: 148, b: 189)
+        
+        indicator.textColor = record.level.tintColor
+        indicator.text = record.level.symbol
     }
     
-//    public func setTemperature(_ val: Double?) {
-//        if let val = val {
-//
-//
-//
-//            if isTemperatureLow(val) || isTemperatureHigh(val) {
-//                unitLabel.textColor = UIColor(r: 255, g: 40, b: 0)
-//                temperatureLabel.textColor = UIColor(r: 255, g: 40, b: 0)
-//
-//            } else {
-//                unitLabel.textColor = UIColor(r: 38, g: 148, b: 189)
-//                temperatureLabel.textColor = UIColor(r: 38, g: 148, b: 189)
-//            }
-//
-//            temperatureLabel.text = "\(val.rounded())"
-//        } else {
-//            temperatureLabel.text = "_ _"
-//            unitLabel.textColor = .gray
-//            temperatureLabel.textColor = .gray
-//        }
-//
-//    }
-//
-//    public func setUnit(_ unit: String) {
-//        unitLabel.text = unit
-//    }
-    
     private func setup() {
-        let temperatureLabel = UILabel()
-        temperatureLabel.font = UIFont.avenirNext(bold: .regular, size: 64)
-        temperatureLabel.text = "_ _"
-        temperatureLabel.textColor = .gray
-        self.temperatureLabel = temperatureLabel
-        addSubview(temperatureLabel)
+        let recordLabel = UILabel()
+        recordLabel.text = "_ _"
+        recordLabel.font = UIFont.avenirNext(bold: .regular, size: 64)
+        recordLabel.textColor = .gray
+        self.recordLabel = recordLabel
+        addSubview(recordLabel)
         
         let unitLabel = UILabel()
+        
+        switch model! {
+        case .WT01:
+            unitLabel.text = Record.RecordType.weight.unit
+        case .TEMP03:
+            unitLabel.text = Record.RecordType.temperature.unit
+        default:
+            break
+        }
+        
         unitLabel.textColor = .gray
         unitLabel.font = UIFont.avenirNext(bold: .regular, size: 24)
-        unitLabel.text = "°F"
         unitLabel.setContentHuggingPriority(.defaultHigh + 1, for: .horizontal)
         self.unitLabel = unitLabel
         addSubview(unitLabel)
@@ -190,18 +173,18 @@ class TemperatureRecordsView: UIView {
         self.indicator = indicator
         addSubview(indicator)
         
-        temperatureLabel.snp.makeConstraints { (make) in
+        recordLabel.snp.makeConstraints { (make) in
             make.centerX.bottom.equalToSuperview()
         }
         
         unitLabel.snp.makeConstraints { (make) in
-            make.firstBaseline.equalTo(temperatureLabel)
-            make.left.equalTo(temperatureLabel.snp.right)
+            make.firstBaseline.equalTo(recordLabel)
+            make.left.equalTo(recordLabel.snp.right).offset(2)
         }
         
         indicator.snp.makeConstraints { (make) in
             make.left.equalTo(unitLabel.snp.right)
-            make.top.equalTo(temperatureLabel)
+            make.top.equalTo(recordLabel)
         }
     }
 }
@@ -210,7 +193,7 @@ class GeneralRecordsView: UIView {
     var model: DeviceModel!
     weak var verticalStackView: UIStackView!
     weak var horizontalStackView: UIStackView!
-    var labels: [Record.RecordType: UILabel] = [:]
+    var labels: [Record.RecordType: (UILabel, UILabel)] = [:]
     
     init(model: DeviceModel) {
         self.model = model
@@ -223,22 +206,18 @@ class GeneralRecordsView: UIView {
         super.init(coder: coder)
     }
     
-//    public func configure(with batch: Batch) {
-//        for record in batch.records {
-//            guard let label = labels[record.type] else { return }
-//            guard let value = record.value as? Double else { return }
-//
-//            switch record.type {
-//            case .diastolic:
-//
-//            default:
-//                <#code#>
-//            }
-//
-//
-//            label.text = "\(value.rounded())"
-//        }
-//    }
+    public func configure(with batch: Batch) {
+        for record in batch.records {
+            guard let (label, indicator) = labels[record.type] else { return }
+            guard let value = record.value as? Double else { return }
+            
+            label.text = "\(value.rounded())"
+            label.textColor = UIColor(r: 38, g: 148, b: 189)
+            
+            indicator.text = record.level.symbol
+            indicator.textColor = record.level.tintColor
+        }
+    }
     
     private func setup() {
         let vs = UIStackView()
@@ -266,8 +245,22 @@ class GeneralRecordsView: UIView {
             label.font = UIFont.avenirNext(bold: .regular, size: 30)
             label.text = "_ _"
             label.textColor = .gray
-            labels[type] = label
             hs.addArrangedSubview(label)
+            
+            let indicator = UILabel()
+            indicator.setContentHuggingPriority(.defaultHigh + 1, for: .horizontal)
+            hs.addArrangedSubview(indicator)
+            
+            indicator.snp.makeConstraints { (make) in
+                make.top.equalToSuperview()
+                make.width.greaterThanOrEqualTo(10)
+            }
+            
+            if #available(iOS 11.0, *) {
+                hs.setCustomSpacing(2, after: label)
+            }
+            
+            labels[type] = (label, indicator)
             
             self.horizontalStackView = hs
             vs.addArrangedSubview(hs)

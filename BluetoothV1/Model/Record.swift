@@ -9,55 +9,12 @@
 import Foundation
 import UIKit
 
-//struct DeviceProfile {
-//
-//}
-//
-
-//
-//struct DataDecoder {
-//    static func decode(_ dict: [String: Any], from device: Device) -> [Record] {
-//        var records: [Record] = []
-//
-//        switch device.model {
-//        case .PM10:
-//            records = decodeFromPM10(dict)
-//        default:
-//            break
-//        }
-//
-//        return records
-//    }
-//
-//    private static func decodeFromPM10(_ dict: [String: Any]) -> [Record] {
-//        var records: [Record] = []
-//
-//        return records
-//    }
-//}
-//
-//struct Device {
-//    let identity: String
-//    let category: DeviceCategory
-//    let model: DeviceModel
-//    var brand: Brand?
-//    var image: UIImage?
-//    var batches: [[Date: [Record]]] = []
-//}
-//
-//enum DeviceCategory {
-//    case oximeter
-//}
-//
-//enum Brand {
-//    case contec
-//}
-
 enum DeviceModel: CaseIterable {
     //contec
     case PM10
     case WT01
     case SpO2
+    case TEMP01
     case TEMP03
     case NIBP03
     case NIBP04
@@ -66,6 +23,7 @@ enum DeviceModel: CaseIterable {
         if name.prefix(4) == "PM10" { return .PM10 }
         if name.prefix(4) == "SpO2" { return .SpO2 }
         if name.prefix(4) == "WT01" { return .WT01 }
+        if name.prefix(6) == "TEMP01" { return .TEMP01 }
         if name.prefix(6) == "TEMP03" { return .TEMP03 }
         if name.prefix(6) == "NIBP03" { return .NIBP03 }
         if name.prefix(6) == "NIBP04" { return .NIBP04 }
@@ -81,7 +39,7 @@ enum DeviceModel: CaseIterable {
             return "WT01"
         case .SpO2:
             return "Oximeter"
-        case .TEMP03:
+        case .TEMP03, .TEMP01:
             return "Thermometer"
         case .NIBP03, .NIBP04:
             return "Blood Pressure Monitor"
@@ -94,10 +52,12 @@ enum DeviceModel: CaseIterable {
     
     var recordTypes: [Record.RecordType] {
         switch self {
-        case .TEMP03:
+        case .TEMP03, .TEMP01:
             return [.temperature]
         case .NIBP04, .NIBP03:
             return [.systolic, .diastolic, .pulse]
+        case .WT01:
+            return [.weight]
         default:
             fatalError()
         }
@@ -109,6 +69,13 @@ struct Device {
     let name: String
     var batches: [Batch] = []
     var peripheral: CBPeripheral?
+    
+    init(model: DeviceModel, name: String, batches: [Batch] = [], peripheral: CBPeripheral? = nil) {
+        self.model = model
+        self.name = name
+        self.batches = batches
+        self.peripheral = peripheral
+    }
     
     var displayName: String {
         return model.displayName
@@ -152,6 +119,7 @@ struct Record {
         case diastolic
         case systolic
         case pulse
+        case weight
         
         var name: Name {
             switch self {
@@ -163,6 +131,8 @@ struct Record {
                 return Record.nameOfPulse
             case .temperature:
                 return Record.nameOfTemperature
+            case .weight:
+                return Record.nameOfWeight
             }
         }
         
@@ -174,8 +144,21 @@ struct Record {
                 return UIImage(named: "sys_label")
             case .pulse:
                 return UIImage(named: "pulse_label")
-            case .temperature:
+            case .temperature, .weight:
                 return nil
+            }
+        }
+        
+        var unit: String {
+            switch self {
+            case .diastolic, .systolic:
+                return "mmHg"
+            case .pulse:
+                return "bpm"
+            case .temperature:
+                return "°F"
+            case .weight:
+                return "lbs"
             }
         }
     }
@@ -203,8 +186,12 @@ struct Record {
             switch self {
             case .normal:
                 return UIColor(r: 38, g: 148, b: 189)
-            default:
+            case .slightlyHigh, .slightlyLow:
+                return UIColor(r: 255, g: 165, b: 0)
+            case .high, .low:
                 return UIColor(r: 255, g: 40, b: 0)
+            case .unknown:
+                return .gray
             }
         }
     }
@@ -232,7 +219,8 @@ struct Record {
             if isTemperatureLow(value) { return .low }
             if isTemperatureHigh(value) { return .high }
             return .normal
-        default: fatalError()
+        case .pulse, .weight:
+            return .normal
         }
         fatalError()
     }
@@ -243,6 +231,7 @@ extension Record {
     static let nameOfSystolic = Name(rawValue: "systolic")
     static let nameOfDiastolic = Name(rawValue: "diastolic")
     static let nameOfPulse = Name(rawValue: "pulse")
+    static let nameOfWeight = Name(rawValue: "weight")
 }
 
 struct Batch {

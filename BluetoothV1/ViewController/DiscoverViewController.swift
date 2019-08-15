@@ -159,36 +159,39 @@ extension DiscoverViewController: BluetoothManagerDelegate {
         guard !BluetoothManager.shared.isGarbage(peripheral) else { return }
         //exclude the peripherals we don't need
         guard let name = peripheral.name, let model = DeviceModel.from(name) else { return }
+        BluetoothManager.shared.stopScan()
         //If this peripheral is a new deivce which not in accept bag, we need pop up a page to make user decide whether connect or not
         if BluetoothManager.shared.isNewDevice(peripheral) {
             let device = Device(model: model, name: name)
             let newDeviceViewController = NewDeviceViewController(device: device) { accpet in
                 if accpet {
                     BluetoothManager.shared.connect(peripheral)
+                    BluetoothManager.shared.addToAcceptBag(peripheral)
+                    var device = Device(model: model, name: name)
+                    device.peripheral = peripheral
+                    DeviceStore.shared.addDevice(device)
+                    DispatchQueue.main.async {
+                        self.tableView.reloadData()
+                    }
                 } else {
                     BluetoothManager.shared.addToGarbageBag(peripheral)
                 }
+                BluetoothManager.shared.scan()
             }
             
             self.present(newDeviceViewController, animated: true, completion: nil)
         } else { // Not a new device, in our accept bag
             BluetoothManager.shared.connect(peripheral)
+            BluetoothManager.shared.scan()
         }
     }
     
-    func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
-        print("Did connect: \(peripheral.name ?? "")")
-        guard let name = peripheral.name, let model = DeviceModel.from(name) else { return }
-        guard !BluetoothManager.shared.hasAccepted(peripheral) else { return }
-        
-        BluetoothManager.shared.addToAcceptBag(peripheral)
-        
-        var device = Device(model: model, name: name)
-        device.peripheral = peripheral
-         DeviceStore.shared.addDevice(device)
-        
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
-    }
+//    func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+//        print("Did connect: \(peripheral.name ?? "")")
+//        guard let name = peripheral.name, let model = DeviceModel.from(name) else { return }
+//        guard !BluetoothManager.shared.hasAccepted(peripheral) else { return }
+//
+//
+//
+//    }
 }

@@ -14,6 +14,9 @@ protocol BluetoothManagerDelegate: class {
     func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral)
     func bluetoothDidFailToConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral)
     func bluetoothDidDisconnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral)
+    func bluetoothWillFetchData(_ manager: BluetoothManager, from peripheral: CBPeripheral)
+    func bluetoothDidReceivedData(_ manager: BluetoothManager, from peripheral: CBPeripheral, _ batch: Batch)
+    func bluetoothDidFetchDataError(_ manager: BluetoothManager, from peripheral: CBPeripheral, _ message: String)
 }
 
 //Default implementation
@@ -22,14 +25,18 @@ extension BluetoothManagerDelegate {
     func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {}
     func bluetoothDidFailToConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {}
     func bluetoothDidDisconnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {}
+    func bluetoothWillFetchData(_ manager: BluetoothManager, from peripheral: CBPeripheral) {}
+    func bluetoothDidReceivedData(_ manager: BluetoothManager, from peripheral: CBPeripheral, _ batch: Batch) {}
+    func bluetoothDidFetchDataError(_ manager: BluetoothManager, from peripheral: CBPeripheral, _ message: String) {}
 }
 
 class BluetoothManager: NSObject {
-    
     private var central: CBCentralManager!
     private let delegates: NSHashTable<AnyObject> = NSHashTable.weakObjects()
     private var acceptBag: Set<CBPeripheral> = []
     private var garbageBag: Set<CBPeripheral> = []
+    private var command: DeviceCommand = DeviceCommand()
+    private var fetchingPeripheral: CBPeripheral?
     
     /**
      Singleton
@@ -38,9 +45,21 @@ class BluetoothManager: NSObject {
     override init() {
         super.init()
         self.central = CBCentralManager(delegate: self, queue: nil, options: nil)
+        self.command.delegate = self
     }
     
     //Public functions
+    var isFetching: Bool {
+        return fetchingPeripheral != nil
+    }
+    
+    public func fetchData(from device: Device) {
+        guard let peripheral = device.peripheral else { return }
+        fetchingPeripheral = peripheral
+        bluetoothWillFetchData(self, from: peripheral)
+        command.peripheral(peripheral, receiveData: 1)
+    }
+    
     public func isNewDevice(_ peripheral: CBPeripheral) -> Bool {
         return !acceptBag.contains(peripheral) && !garbageBag.contains(peripheral)
     }
@@ -79,6 +98,10 @@ class BluetoothManager: NSObject {
     
     public func isBluetoothAvailable() -> Bool {
         return central.state == .poweredOn
+    }
+    
+    private func deleteData(from peripheral: CBPeripheral) {
+        command.peripheral(peripheral, deleteData: 0)
     }
 }
 
@@ -127,6 +150,24 @@ extension BluetoothManager {
             (delegate as! BluetoothManagerDelegate).bluetoothDidDisconnectPeripheral(manager, peripheral)
         }
     }
+    
+    func bluetoothWillFetchData(_ manager: BluetoothManager, from peripheral: CBPeripheral) {
+        for delegate in delegates.allObjects.reversed() {
+            (delegate as! BluetoothManagerDelegate).bluetoothWillFetchData(manager, from: peripheral)
+        }
+    }
+    
+    func bluetoothDidReceivedData(_ manager: BluetoothManager, from peripheral: CBPeripheral, _ batch: Batch) {
+        for delegate in delegates.allObjects.reversed() {
+            (delegate as! BluetoothManagerDelegate).bluetoothDidReceivedData(manager, from: peripheral, batch)
+        }
+    }
+    
+    func bluetoothDidFetchDataError(_ manager: BluetoothManager, from peripheral: CBPeripheral, _ message: String) {
+        for delegate in delegates.allObjects.reversed() {
+            (delegate as! BluetoothManagerDelegate).bluetoothDidFetchDataError(manager, from: peripheral, message)
+        }
+    }
 }
 
 // MARK: - CBCentralManager delegate
@@ -153,6 +194,32 @@ extension BluetoothManager: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         bluetoothDidDisconnectPeripheral(self, peripheral)
+    }
+}
+
+// MARK: - Device command delegate
+extension BluetoothManager: DeviceCommandDelegate {
+    func getDeviceData(_ dicDeviceData: [AnyHashable : Any]!) {
+        guard let peripheral = fetchingPeripheral else { return }
+        fetchingPeripheral = nil
+        if let batch = Batch(dict: dicDeviceData) {
+            print(batch)
+            bluetoothDidReceivedData(self, from: peripheral, batch)
+//            deleteData(from: peripheral)
+        } else {
+            bluetoothDidFetchDataError(self, from: peripheral, "Please re-measure your vital sign")
+        }
+    }
+    
+    func getOperateResult(_ dicOperateResult: [AnyHashable : Any]!) {
+        print(#function)
+    }
+    
+    func getError(_ dicError: [AnyHashable : Any]!) {
+        guard let peripheral = fetchingPeripheral else { return }
+        fetchingPeripheral = nil
+        print(#function)
+        bluetoothDidFetchDataError(self, from: peripheral, "Fetch data error, try again later")
     }
 }
 

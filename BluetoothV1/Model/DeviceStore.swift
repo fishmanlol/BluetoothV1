@@ -11,9 +11,13 @@ struct DeviceStore {
     static var shared = DeviceStore()
     private init() {}
     
-    private var devices: [Device] = [Device(model: .TEMP03, name: "TEMP030011", batches: [], peripheral: nil),
-                                     Device(model: .NIBP03, name: "NIBP030001", batches: [], peripheral: nil),
-                                     Device(model: .WT01, name: "WT014321", batches: [], peripheral: nil)]
+    private var devices: [Device] = []//Device(model: .PM10, name: "PM101234")
+    
+    public func existsRedundantBatch(_ batch: Batch, in device: Device) -> Bool {
+        guard let index = devices.firstIndex(of: device) else { return false }
+        let varDevice = devices[index]
+        return varDevice.batches.contains { batch.isRedundant(with: $0) }
+    }
     
     public mutating func addDevice(_ device: Device) {
         guard !devices.contains(device) else { return }

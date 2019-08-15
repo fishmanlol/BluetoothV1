@@ -13,7 +13,9 @@ class DeviceViewController: UIViewController {
     weak var fetchButton: UIButton!
     weak var statusBar: StatusBar!
     
+    private var timer: Timer?//Bluetooth SDK sometimes just don't return anything, in case user not wait forever
     private var device: Device
+    private var fetching = false
     
     init(device: Device) {
         self.device = device
@@ -40,35 +42,58 @@ class DeviceViewController: UIViewController {
             displayAlert(msg: Constant.bluetoothIsNotAvailable)
             return
         }
-        
+
         guard let peripheralState = device.peripheral?.state else {
             displayAlert(msg: Constant.unkownError)
             return
         }
-        
+
         guard peripheralState == .connected else {
             displayAlert(title: nil, msg: Constant.deviceNotConncted)
             return
         }
         
         
-        //fake data
-        let batch: Batch
-        switch device.model {
-        case .TEMP03, .TEMP01:
-            let randomTemperature = Double.random(in: ClosedRange(uncheckedBounds: (lower: 90, upper: 110))).rounded()
-            batch = Batch(date: Date(), records: [Record(type: .temperature, value: randomTemperature)])
-        case .NIBP03, .NIBP04:
-            batch = Batch(date: Date(), records: [Record(type: .systolic, value: 121.0), Record(type: .diastolic, value: 80.0), Record(type: .pulse, value: 72.0)])
-        case .WT01:
-            let randomWeight = Double.random(in: ClosedRange(uncheckedBounds: (lower: 60, upper: 150))).rounded()
-            batch = Batch(date: Date(timeInterval: -500000, since: Date()), records: [Record(type: .weight, value: randomWeight), Record(type: .weight, value: randomWeight)])
-        default:
-            fatalError()
-        }
-
-         DeviceStore.shared.addBatch(batch, in: device)
-        tableView.reloadData()
+//        let v: [Double] = stride(from: 2500, to: 0, by: -1).map { (_) -> Double in
+//            return Double(arc4random_uniform(50))
+//        }
+//        print(v)
+//        let batch = Batch(date: Date(), records: [Record(type: .heartRate, value: 78.0), Record(type: .ecg, value: v)])
+//        let batch = Batch(date: Date(), records: [Record(type: .pulse, value: 12.0), Record(type: .oxygen, value: 20.0)])
+        
+//        DeviceStore.shared.addBatch(batch, in: device)
+//        tableView.reloadData()
+        
+        BluetoothManager.shared.fetchData(from: device)
+//        if device.model == .BC01 {
+//            let batch = Batch(date: Date(), records: [Record(type: .bil, value: 1.0),
+//                                                        Record(type: .bld, value: 1.0),
+//                                                        Record(type: .ph, value: 2.0),
+//                                                        Record(type: .glu, value: 4.0),
+//                                                        Record(type: .sg, value: "< 2"),
+//                                                        Record(type: .nit, value: 9.0)])
+//            DeviceStore.shared.addBatch(batch, in: device)
+//            tableView.reloadData()
+//        }
+        
+        
+//        //fake data
+//        let batch: Batch
+//        switch device.model {
+//        case .TEMP03, .TEMP01:
+//            let randomTemperature = Double.random(in: ClosedRange(uncheckedBounds: (lower: 90, upper: 110))).rounded()
+//            batch = Batch(date: Date(), records: [Record(type: .temperature, value: randomTemperature)])
+//        case .NIBP03, .NIBP04:
+//            batch = Batch(date: Date(), records: [Record(type: .systolic, value: 121.0), Record(type: .diastolic, value: 80.0), Record(type: .pulse, value: 72.0)])
+//        case .WT01:
+//            let randomWeight = Double.random(in: ClosedRange(uncheckedBounds: (lower: 60, upper: 150))).rounded()
+//            batch = Batch(date: Date(timeInterval: -500000, since: Date()), records: [Record(type: .weight, value: randomWeight), Record(type: .weight, value: randomWeight)])
+//        default:
+//            fatalError()
+//        }
+//
+//         DeviceStore.shared.addBatch(batch, in: device)
+//        tableView.reloadData()
     }
     
     deinit {
@@ -116,8 +141,10 @@ extension DeviceViewController {
         
         let fetchButton = UIButton(type: .system)
         fetchButton.setTitle("Fetch", for: .normal)
+        fetchButton.setTitle("Fetching...", for: .disabled)
         fetchButton.roundedCorner()
         fetchButton.setBackgroundImage(UIImage.from(.darkBlue), for: .normal)
+        fetchButton.setBackgroundImage(UIImage.from(.gray), for: .disabled)
         fetchButton.setTitleColor(.white, for: .normal)
         fetchButton.addTarget(self, action: #selector(fetchButtonTapped), for: .touchUpInside)
         self.fetchButton = fetchButton
@@ -158,7 +185,7 @@ extension DeviceViewController {
             case .connected:
                 statusBar.status = .succeed(Constant.deviceConncted)
             case .connecting:
-                statusBar.status = .working(Constant.deviceConnecting)
+                statusBar.status = .working(Constant.deviceSearch)
             default:
                 BluetoothManager.shared.connect(peripheral)
                 statusBar.status = .working(Constant.deviceSearch)
@@ -169,16 +196,20 @@ extension DeviceViewController {
             statusBar.status = .failed(Constant.bluetoothIsNotAvailable)
         }
     }
+    
+    private func updateFetchButton(_ isFetching: Bool) {
+        if isFetching {
+            fetchButton.isEnabled = false
+        } else {
+            fetchButton.isEnabled = true
+        }
+    }
 }
 
 // MARK: - Table view delegate
 extension DeviceViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 30
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cell.contentView.layer.masksToBounds = true
     }
 }
 
@@ -194,6 +225,7 @@ extension DeviceViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: Constant.batchCell, for: indexPath) as! BatchCell
         if DeviceStore.shared.getBatchCount(in: device) != 0 {
             let batch = DeviceStore.shared.getBatch(at: indexPath, in: device)
@@ -228,19 +260,64 @@ extension DeviceViewController: BluetoothManagerDelegate {
     }
     
     func bluetoothDidConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        guard let currentPeripheral = device.peripheral, currentPeripheral === peripheral else { return }
         print(#function)
         statusBar.status = .succeed(Constant.deviceConncted)
+        
+        //Auto fetch
+        if device.model == .PULMO01 || device.model == .PULMO02 || device.model == .SpO2 || device.model == .NIBP03 || device.model == .NIBP04 {
+            BluetoothManager.shared.fetchData(from: device)
+        }
     }
     
     func bluetoothDidDisconnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        guard let currentPeripheral = device.peripheral, currentPeripheral === peripheral else { return }
         print(#function)
         manager.connect(peripheral)
         statusBar.status = .working(Constant.deviceSearch)
     }
     
     func bluetoothDidFailToConnectPeripheral(_ manager: BluetoothManager, _ peripheral: CBPeripheral) {
+        guard let currentPeripheral = device.peripheral, currentPeripheral === peripheral else { return }
         print(#function)
         manager.connect(peripheral)
         statusBar.status = .working(Constant.deviceSearch)
+    }
+    
+    func bluetoothWillFetchData(_ manager: BluetoothManager, from peripheral: CBPeripheral) {
+        updateFetchButton(manager.isFetching)
+        self.fetching = true
+        if device.model != .PM10 { //PM10 cost time on fetching, therefore, forgot about it
+            timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false, block: { [weak self] (timer) in
+                guard let weakSelf = self else { return }
+                if weakSelf.fetching { //Error happens, Bluetooth SDK not return anything
+                    weakSelf.displayAlert(title: "Error", msg: Constant.unkownError)
+                    weakSelf.updateFetchButton(false)
+                    weakSelf.fetching = false
+                }
+            })
+        }
+    }
+    
+    func bluetoothDidReceivedData(_ manager: BluetoothManager, from peripheral: CBPeripheral, _ batch: Batch) {
+        guard let currentPeripheral = device.peripheral, currentPeripheral === peripheral else { return }
+        updateFetchButton(manager.isFetching)
+        self.fetching = false
+        timer?.invalidate()
+        
+        if !DeviceStore.shared.existsRedundantBatch(batch, in: device) {
+            DeviceStore.shared.addBatch(batch, in: device)
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    func bluetoothDidFetchDataError(_ manager: BluetoothManager, from peripheral: CBPeripheral, _ message: String) {
+        guard let currentPeripheral = device.peripheral, currentPeripheral === peripheral else { return }
+        updateFetchButton(manager.isFetching)
+        self.fetching = false
+        timer?.invalidate()
+        displayAlert(title: "Error", msg: message, dismissAfter: 2)
     }
 }

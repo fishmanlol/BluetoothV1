@@ -9,6 +9,9 @@
 import UIKit
 
 extension UIViewController {
+    
+    static var displayTimer: Timer?
+    
     func displayAlert(title: String?, msg: String, hasCancel: Bool, actionStyle:  UIAlertAction.Style = .default, actionTitle: String = "OK",action: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
         
@@ -29,9 +32,18 @@ extension UIViewController {
     func displayAlert(title: String? = nil, msg: String, dismissAfter seconds: TimeInterval = 1.35) {
         let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
         present(alert, animated: true) {
-            Timer.scheduledTimer(withTimeInterval: seconds, repeats: false) { [weak self] _ in
-                self?.dismiss(animated: true, completion: nil)
+            alert.view.superview?.isUserInteractionEnabled = true
+            let tap = UITapGestureRecognizer(target: self, action: #selector(self.alertBackgroundTapped))
+            alert.view.superview?.addGestureRecognizer(tap)
+            UIViewController.displayTimer = Timer.scheduledTimer(withTimeInterval: seconds, repeats: false) { [weak self] _ in
+                self?.dismiss(animated: true)
             }
         }
+    }
+    
+    @objc func alertBackgroundTapped() {
+        self.dismiss(animated: false, completion: nil)
+        UIViewController.displayTimer?.invalidate()
+        UIViewController.displayTimer = nil
     }
 }

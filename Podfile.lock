@@ -1,20 +1,26 @@
 PODS:
+  - Charts (3.3.0):
+    - Charts/Core (= 3.3.0)
+  - Charts/Core (3.3.0)
   - lottie-ios (3.1.2)
   - SnapKit (5.0.0)
 
 DEPENDENCIES:
+  - Charts
   - lottie-ios
   - SnapKit
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - Charts
     - lottie-ios
     - SnapKit
 
 SPEC CHECKSUMS:
+  Charts: e0dd4cd8f257bccf98407b58183ddca8e8d5b578
   lottie-ios: 49cd85b1f24f61a7708ad7ec76a523ab2d0e3100
   SnapKit: fd22d10eb9aff484d79a8724eab922c1ddf89bcf
 
-PODFILE CHECKSUM: def9340b6fd6b8c4799555ac877d7ae19bafc2e4
+PODFILE CHECKSUM: 3e221eb2765cf961bcf0d9b7faf0d4d707cb24aa
 
 COCOAPODS: 1.7.5

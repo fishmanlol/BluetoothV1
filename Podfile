@@ -6,6 +6,7 @@ target 'BluetoothV1' do
   use_frameworks!
   pod 'SnapKit'
   pod 'lottie-ios'
+  pod 'Charts'
   # Pods for BluetoothV1
 
 end

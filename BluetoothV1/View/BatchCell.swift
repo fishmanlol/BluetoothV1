@@ -7,14 +7,12 @@
 //
 
 import UIKit
+import Charts
 
 class BatchCell: UITableViewCell {
     weak var timeLabel: UILabel!
-    weak var backgroundImageView: UIImageView!
+    weak var shadowView: UIView!
     var model: DeviceModel?
-    
-    private let singleRecordBackgroundHeight: CGFloat = 140
-    private let bloodPressureBackgoundHeight: CGFloat = 240
     
     lazy var recordsView: UIView = {
         guard let model = model else { return UIView() }
@@ -23,27 +21,26 @@ class BatchCell: UITableViewCell {
             let singleRecordView = SingleRecordView(model: model)
             contentView.addSubview(singleRecordView)
             singleRecordView.snp.makeConstraints { (make) in
-                make.centerX.left.top.equalTo(backgroundImageView)
-                make.bottom.equalTo(backgroundImageView).offset(-10)
+                make.edges.equalTo(shadowView)
             }
             
-            backgroundImageView.snp.updateConstraints { (make) in
-                make.height.equalTo(singleRecordBackgroundHeight)
+            shadowView.snp.updateConstraints { (make) in
+                make.height.equalTo(singleRecordView.intrinsicContentSize.height)
             }
             
             return singleRecordView
-        case .NIBP03, .NIBP04:
+        case .NIBP03, .NIBP04, .SpO2, .BC01, .PM10, .PULMO01, .BG01:
             let generalRecordsView = GeneralRecordsView(model: model)
             contentView.addSubview(generalRecordsView)
             generalRecordsView.snp.makeConstraints { (make) in
                 make.centerX.equalToSuperview()
-                make.left.equalTo(backgroundImageView).offset(30)
-                make.top.equalTo(backgroundImageView).offset(20)
-                make.bottom.equalTo(backgroundImageView).offset(-30)
+                make.left.equalTo(shadowView).offset(30)
+                make.top.equalTo(shadowView).offset(20)
+                make.bottom.equalTo(shadowView).offset(-20)
             }
             
-            backgroundImageView.snp.updateConstraints { (make) in
-                make.height.equalTo(bloodPressureBackgoundHeight)
+            shadowView.snp.updateConstraints { (make) in
+                make.height.equalTo(generalRecordsView.intrinsicContentSize.height)
             }
             
             return generalRecordsView
@@ -73,7 +70,7 @@ class BatchCell: UITableViewCell {
         case .TEMP03, .WT01, .TEMP01:
             guard let recordsView = recordsView as? SingleRecordView else { return }
             recordsView.configure(with: batch)
-        case .NIBP03, .NIBP04:
+        case .NIBP03, .NIBP04, .SpO2, .BC01, .PM10, .PULMO01, .BG01:
             guard let recordsView = recordsView as? GeneralRecordsView else { return }
             recordsView.configure(with: batch)
         default:
@@ -94,18 +91,29 @@ extension BatchCell {
         self.timeLabel = timeLabel
         contentView.addSubview(timeLabel)
         
-        let backgroundImageView = UIImageView(image: UIImage(named: "cell_background_1"))
-        backgroundImageView.contentMode = .scaleToFill
-        self.backgroundImageView = backgroundImageView
-        contentView.addSubview(backgroundImageView)
+        
+        let shadowView = UIView()
+        shadowView.layer.cornerRadius = 12
+        shadowView.layer.shadowOpacity = 0.23
+        shadowView.layer.shadowColor = UIColor.black.cgColor
+        shadowView.layer.shadowOffset = CGSize.zero
+        shadowView.layer.shadowRadius = 4
+        shadowView.layer.masksToBounds = false
+        shadowView.layer.shouldRasterize = true
+        shadowView.layer.rasterizationScale = UIScreen.main.scale
+        shadowView.backgroundColor = .white
+        
+        self.shadowView = shadowView
+        contentView.addSubview(shadowView)
         
         timeLabel.snp.makeConstraints { (make) in
             make.left.right.top.equalToSuperview()
             make.height.equalTo(20)
         }
         
-        backgroundImageView.snp.makeConstraints { (make) in
-            make.bottom.centerX.equalToSuperview()
+        shadowView.snp.makeConstraints { (make) in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-10)
             make.left.equalTo(30)
             make.height.equalTo(160)
             make.top.equalTo(timeLabel.snp.bottom).offset(10)
@@ -118,6 +126,10 @@ class SingleRecordView: UIView {
     weak var unitLabel: UILabel!
     weak var indicator: UILabel!
     var model: DeviceModel!
+    
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: 0, height: 140)
+    }
     
     init(model: DeviceModel) {
         super.init(frame: .zero)
@@ -137,7 +149,7 @@ class SingleRecordView: UIView {
         unitLabel.text = record.type.unit
         unitLabel.textColor = UIColor(r: 38, g: 148, b: 189)
         
-        recordLabel.text = "\(value.rounded())"
+        recordLabel.text = "\(value)"
         recordLabel.textColor = UIColor(r: 38, g: 148, b: 189)
         
         indicator.textColor = record.level.tintColor
@@ -193,7 +205,16 @@ class GeneralRecordsView: UIView {
     var model: DeviceModel!
     weak var verticalStackView: UIStackView!
     weak var horizontalStackView: UIStackView!
+    weak var chartView: LineChartView!
     var labels: [Record.RecordType: (UILabel, UILabel)] = [:]
+    
+    override var intrinsicContentSize: CGSize {
+        var height = (CGFloat(labels.count) * 80)
+        if model! == .PM10 {
+            height += 200
+        }
+        return CGSize(width: 0, height: height)
+    }
     
     init(model: DeviceModel) {
         self.model = model
@@ -208,12 +229,61 @@ class GeneralRecordsView: UIView {
     
     public func configure(with batch: Batch) {
         for record in batch.records {
-            guard let (label, indicator) = labels[record.type] else { return }
-            guard let value = record.value as? Double else { return }
+            if record.type == .ecg { //Ecg is graph, need handle separately
+                guard let numbers = record.value as? [Double] else { continue }
+                
+                let xAxis = self.chartView.xAxis
+                xAxis.setLabelCount(11, force: true)
+                xAxis.valueFormatter = self
+                
+                self.chartView.rightAxis.enabled = false
+                self.chartView.dragEnabled = false
+                self.chartView.setScaleEnabled(false)
+                self.chartView.pinchZoomEnabled = false
+                self.chartView.highlightPerTapEnabled = false
+                self.chartView.highlightPerDragEnabled = false
+                self.chartView.chartDescription?.text = "ECG chart"
+                
+                //Complex calculation
+                DispatchQueue.global().async {
+                    var lineChartEntries = [ChartDataEntry]()
+                    for i in 0..<numbers.count {
+                        let entry = ChartDataEntry(x: Double(i), y: numbers[i], icon: nil)
+                        
+                        lineChartEntries.append(entry)
+                    }
+                    let line = LineChartDataSet(entries: lineChartEntries, label: nil)
+                    line.setColor(NSUIColor(r: 38, g: 148, b: 189))
+                    line.axisDependency = .left
+                    line.drawCirclesEnabled = false
+                    line.drawValuesEnabled = false
+                    let chartData = LineChartData()
+                    chartData.addDataSet(line)
+                    
+                    DispatchQueue.main.async {
+                        self.chartView.data = chartData
+                    }
+                }
+                continue
+            }
             
-            label.text = "\(value.rounded())"
+            guard let (label, indicator) = labels[record.type] else { continue }
+            
+            switch record.type {
+            case .sg: //Value is string
+                guard let value = record.value as? String else { continue }
+                label.text = "\(value)"
+            default://Value is double
+                guard let value = record.value as? Double else { continue }
+                if floor(value).isEqual(to: value) {
+                    label.text = "\(Int(value))"
+                } else {
+                    label.text = "\(value)"
+                }
+                
+            }
+            
             label.textColor = UIColor(r: 38, g: 148, b: 189)
-            
             indicator.text = record.level.symbol
             indicator.textColor = record.level.tintColor
         }
@@ -229,10 +299,24 @@ class GeneralRecordsView: UIView {
         addSubview(vs)
         
         for type in model.recordTypes {
+            if type == .ecg { //ecg is graph
+                let chartView = LineChartView()
+                self.chartView = chartView
+                vs.spacing = 30
+                vs.distribution = .fill
+                vs.addArrangedSubview(chartView)
+                chartView.snp.makeConstraints { (make) in
+                    make.left.right.equalToSuperview()
+                }
+                continue
+            }
+            
             let hs = UIStackView()
             hs.axis = .horizontal
             hs.alignment = .bottom
             hs.distribution = .fill
+            
+            //other type
             
             let imageView = UIImageView()
             imageView.contentMode = .left
@@ -272,4 +356,9 @@ class GeneralRecordsView: UIView {
     }
 }
 
-
+extension GeneralRecordsView: IAxisValueFormatter {
+    func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+        guard let _ = axis else { return "" }
+        return "\(Int((value / 250).rounded()))s"
+    }
+}

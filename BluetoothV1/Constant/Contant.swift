@@ -6,8 +6,7 @@
 //  Copyright © 2019 Yi Tong. All rights reserved.
 //
 
-struct Constant {
-}
+struct Constant {}
 
 // MARK: - String
 extension Constant {

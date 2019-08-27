@@ -37,6 +37,9 @@
 		8E2765B422F4EBDB00E2C70F /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2765B322F4EBDB00E2C70F /* UIFont.swift */; };
 		8E5288B222F4EEF600AFB2A4 /* DeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5288B022F4EEF600AFB2A4 /* DeviceCell.swift */; };
 		8E5288B322F4EEF600AFB2A4 /* DeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E5288B122F4EEF600AFB2A4 /* DeviceCell.xib */; };
+		8E77ADBB2314B0B600413290 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E77ADBA2314B0B600413290 /* Device.swift */; };
+		8E77ADBD2314B0DC00413290 /* DeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E77ADBC2314B0DC00413290 /* DeviceModel.swift */; };
+		8E77ADBF2314B11800413290 /* Batch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E77ADBE2314B11800413290 /* Batch.swift */; };
 		8E8803F022FBA695007CA201 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8803EF22FBA695007CA201 /* Functions.swift */; };
 		8EC625B322FDF0C7003FFABE /* Contant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC625B222FDF0C7003FFABE /* Contant.swift */; };
 		8EC625B522FE2995003FFABE /* DeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC625B422FE2995003FFABE /* DeviceStore.swift */; };
@@ -86,6 +89,9 @@
 		8E2765B322F4EBDB00E2C70F /* UIFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
 		8E5288B022F4EEF600AFB2A4 /* DeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCell.swift; sourceTree = "<group>"; };
 		8E5288B122F4EEF600AFB2A4 /* DeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeviceCell.xib; sourceTree = "<group>"; };
+		8E77ADBA2314B0B600413290 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		8E77ADBC2314B0DC00413290 /* DeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceModel.swift; sourceTree = "<group>"; };
+		8E77ADBE2314B11800413290 /* Batch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Batch.swift; sourceTree = "<group>"; };
 		8E8803EF22FBA695007CA201 /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		8EC625B222FDF0C7003FFABE /* Contant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contant.swift; sourceTree = "<group>"; };
 		8EC625B422FE2995003FFABE /* DeviceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceStore.swift; sourceTree = "<group>"; };
@@ -231,6 +237,9 @@
 			isa = PBXGroup;
 			children = (
 				8E2765AB22F49DE900E2C70F /* Record.swift */,
+				8E77ADBE2314B11800413290 /* Batch.swift */,
+				8E77ADBC2314B0DC00413290 /* DeviceModel.swift */,
+				8E77ADBA2314B0B600413290 /* Device.swift */,
 				8E01BD3B22FA02610064219D /* BluetoothManager.swift */,
 				8EC625B422FE2995003FFABE /* DeviceStore.swift */,
 				8E14F0F123048FA2001DF433 /* Cache.swift */,
@@ -406,13 +415,16 @@
 				102DE2DF22F8825F002B1897 /* UIButton.swift in Sources */,
 				8EC625B522FE2995003FFABE /* DeviceStore.swift in Sources */,
 				8E2765B222F4EBD600E2C70F /* UIColor.swift in Sources */,
+				8E77ADBF2314B11800413290 /* Batch.swift in Sources */,
 				8EDA321F2301E1FF004375B2 /* Double.swift in Sources */,
+				8E77ADBB2314B0B600413290 /* Device.swift in Sources */,
 				8E01BD4122FA33A90064219D /* TemperatureCell.swift in Sources */,
 				8E2765B022F4EA1F00E2C70F /* UIImage.swift in Sources */,
 				8EF1C1ED22F4F843009A8CB4 /* DiscoverViewModel.swift in Sources */,
 				8E5288B222F4EEF600AFB2A4 /* DeviceCell.swift in Sources */,
 				8E2765B422F4EBDB00E2C70F /* UIFont.swift in Sources */,
 				8E1FC1BC22F8AD3E00A8C9FF /* Notification.swift in Sources */,
+				8E77ADBD2314B0DC00413290 /* DeviceModel.swift in Sources */,
 				8E8803F022FBA695007CA201 /* Functions.swift in Sources */,
 				8E1FC1C722F8F9AE00A8C9FF /* NewDeviceViewController.swift in Sources */,
 				8E2765AE22F4A35300E2C70F /* DiscoverViewController.swift in Sources */,
